@@ -1,0 +1,22 @@
+.containerPrincipal {
+    position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 40px;
+      background-color:white;
+  }
+  
+  .containerRegistro {
+    position: absolute; 
+      left: 50%;
+      top: 40%;
+      transform: translate(-50%, -50%);
+      padding: 10px;
+      background-color:white;
+  }
+
+  .containerLogin{
+    text-align: center;
+    background-color: white;
+  }

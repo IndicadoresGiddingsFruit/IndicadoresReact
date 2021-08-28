@@ -1,14 +1,41 @@
 {
   "name": "indicadoresreact",
+  "homepage": "https://giddingsfruit.mx/Indicadores",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/core": "^0.8.0",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.57",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.8.1",
+    "admin-lte": "^3.1.0-rc",
+    "axios": "^0.21.1",
+    "bootstrap": "^4.6.0",
+    "chart.js": "^2.9.4",
+    "date-fns": "^2.19.0",
+    "firebase": "^8.3.1",
+    "material-table": "^1.69.2",
+    "md5": "^2.3.0",
+    "nanoid": "^3.1.22",
     "react": "^17.0.1",
+    "react-autocomplete-hint": "^1.3.0",
+    "react-chartjs-2": "^2.11.1",
+    "react-data-table-component": "^6.11.7",
     "react-dom": "^17.0.1",
+    "react-html-table-to-excel": "^2.0.0",
+    "react-loading": "^2.0.3",
+    "react-places-autocomplete": "^7.3.0",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-select": "^4.3.0",
+    "react-viewerjs": "^0.1.9",
+    "styled-components": "^5.2.1",
+    "sweetalert": "^2.1.2",
+    "sweetalert2": "^10.15.5",
+    "universal-cookie": "^4.0.4",
     "web-vitals": "^1.1.0"
   },
   "scripts": {
@@ -34,5 +61,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "morris.js": "^0.5.0",
+    "raphael": "^2.3.0"
   }
 }
