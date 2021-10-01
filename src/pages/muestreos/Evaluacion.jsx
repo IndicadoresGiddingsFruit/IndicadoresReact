@@ -126,8 +126,8 @@ const tableIcons = {
 
 const Evaluacion=(props)=>{  
   const styles=useStyles();
-  const url="https://localhost:44344/api/evaluacion";
-  //const url="https://giddingsfruit.mx/ApiIndicadores/api/evaluacion";
+  //const url="https://localhost:44344/api/evaluacion";
+  const url="https://giddingsfruit.mx/ApiIndicadores/api/evaluacion";
   const cookies = new Cookies();   
   const[dataT,setDataT]=useState([]);
   

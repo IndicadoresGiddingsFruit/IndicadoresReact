@@ -178,10 +178,10 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
-const Resultados=()=>{  
+const Movimientos=()=>{  
   const styles=useStyles();
-  const url="https://giddingsfruit.mx/ApiIndicadores/api/analisis";
-  //const url="https://localhost:44344/api/analisis";
+  //const url="https://giddingsfruit.mx/ApiIndicadores/api/analisis";
+  const url="https://localhost:44344/api/analisis";
   const cookies = new Cookies();   
   const[data,setData]=useState([]);
   const [loading,setLoading]=useState(false); 
@@ -677,7 +677,7 @@ const Resultados=()=>{
       <MaterialTable 
       columns={rows} id="tblReportResultados"
       data={data} 
-      title="ANALISIS DE RESIDUOS DE PLAGUICIDAS"     
+      title="Movimientos de Material de Empaque (Entradas y Salidas)"     
       className={styles.table}
       localization={{header:{actions:''}}}  
       initialState= {{ pageIndex: 0,}}   
@@ -711,4 +711,4 @@ const Resultados=()=>{
   </div>
   )
   }
-  export default Resultados;
+  export default Movimientos;

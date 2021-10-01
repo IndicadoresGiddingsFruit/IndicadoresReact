@@ -1,29 +1,16 @@
-import React, {useEffect,useState,forwardRef} from 'react'
-import axios from 'axios'
-import Cookies from 'universal-cookie'
-import {FormControl,Select,MenuItem,Checkbox,FormControlLabel} from '@material-ui/core';
-import {Modal,Grid, Button} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles' 
-import moment from 'moment'
-import 'moment/locale/es' // Pasar a español
-import swal from 'sweetalert'
-import Contenedor from '../Contenedor.jsx'
+import React, {useEffect,useState,forwardRef} from 'react';
+import axios from 'axios';
+import Cookies from 'universal-cookie';
+import {Modal,Grid, Button} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles'; 
+import moment from 'moment';
+import 'moment/locale/es'; // Pasar a español
+import swal from 'sweetalert';
+import Contenedor from '../Contenedor.jsx';
 import PropTypes from 'prop-types';
 import AddBox from '@material-ui/icons/AddBox';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
 import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
 import EditTwoToneIcon from '@material-ui/icons/EditTwoTone';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
@@ -35,8 +22,61 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import DoneIcon from '@material-ui/icons/Done';
 import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
-import { format } from 'date-fns';
-import { act } from 'react-dom/test-utils';
+import { format } from 'date-fns';  
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import Check from '@material-ui/icons/Check';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import Edit from '@material-ui/icons/Edit';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Remove from '@material-ui/icons/Remove';
+import SaveAlt from '@material-ui/icons/SaveAlt';
+import Search from '@material-ui/icons/Search';
+import ViewColumn from '@material-ui/icons/ViewColumn';
+import '../../css/index.css';
+
+const rows=[
+  {dataField:'',text:''},
+  {dataField:'cod_Prod',text:'Código'},
+  {dataField:'productor',text:'Productor'}, 
+  {dataField:'campo',text:'Campo'},
+  {dataField:'sector',text:'Sector(es)'},
+  {dataField:'compras_oportunidad',text:'C/oportunidad'},
+  {dataField:'fecha_solicitud',text:'Fecha/solicitud'},
+  {dataField:'inicio_cosecha',text:'Inicio/cosecha'},
+  {dataField:'ubicacion',text:'Ubicacion'},
+  {dataField:'telefono',text:'Telefono'},
+  {dataField:'cajasEstimadas',text:'CajasEstimadas'},
+  {dataField:'liberacion',text:'Autoriza/producción'},
+  {dataField:'fecha_ejecucion',text:'Fecha/ejecución'},
+  {dataField:'analisis',text:'Análisis'},
+  {dataField:'estatus',text:'Calidad'},
+  {dataField:'tarjeta',text:'Tarjeta'},
+  {dataField:'',text:'Reasignar'}
+]
+
+const tableIcons = {
+  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+  DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+  SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+};
 
 const useStyles = makeStyles((theme) => ({
   root:{
@@ -52,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
   
   modal: {
     position: 'absolute',
-    width: 400,
+    width: 500,
     padding: theme.spacing(2, 4, 3),
     top: '50%',
     left: '50%',
@@ -145,11 +185,11 @@ const headCells = [
   { id: 'inicio_cosecha', numeric: true, disablePadding: false, label: 'Inicio cosecha' },
   { id: 'ubicacion', numeric: true, disablePadding: false, label: 'Ubicacion' },
   { id: 'telefono', numeric: true, disablePadding: false, label: 'Telefono' },
+  { id: 'cajasEstimadas', numeric: false, disablePadding: false, label: 'CajasEstimadas' },
   { id: 'liberacion', numeric: true, disablePadding: false, label: 'Autoriza producción' },
   { id: 'fecha_muestreo', numeric: true, disablePadding: false, label: 'Fecha muestreo' },
   { id: 'analisis', numeric: true, disablePadding: false, label: 'Análisis' },
   { id: 'estatus', numeric: true, disablePadding: false, label: 'Calidad' },
-  { id: '', numeric: true, disablePadding: false, label: '' },
   { id: 'tarjeta', numeric: true, disablePadding: false, label: 'Tarjeta' },
   { id: 're_asignar', numeric: true, disablePadding: false, label: 'Re-asignar' }
 ];
@@ -203,7 +243,8 @@ EnhancedTableHead.propTypes = {
 
 function searchTerm(term){
   return function(x){
-    return x.cod_Prod.includes(term) || x.productor.toLowerCase().includes(term) || x.campo.toLowerCase().includes(term) || !term
+    return x.cod_Prod.includes(term) || x.productor.toLowerCase().includes(term) 
+    || x.campo.toLowerCase().includes(term) & !term
   }
 }
 
@@ -211,25 +252,34 @@ const Muestreos=(props)=>{
   const styles=useStyles();
   const url="https://giddingsfruit.mx/ApiIndicadores/api/muestreo";  
   //const url="https://localhost:44344/api/muestreo";  
+  
   const url_calidad="https://giddingsfruit.mx/ApiIndicadores/api/calidadmuestreo";
   const url_campos="https://giddingsfruit.mx/ApiIndicadores/api/campos";
+
   const url_analisis="https://giddingsfruit.mx/ApiIndicadores/api/analisis";
+  //const url_analisis="https://localhost:44344/api/analisis";
+
   const url_sector="https://giddingsfruit.mx/ApiIndicadores/api/muestreosector";
-  const cookies = new Cookies(); 
+ // const url_sector="https://localhost:44344/api/muestreosector";
+  
+ const cookies = new Cookies(); 
+  var user;
   var cod_zona;
   const [liberacionUSA, setLiberacionUSA] = useState(0);
   const [liberacionEU, setLiberacionEU] = useState(0);
   const [f_envio, setf_envio] = useState(format(new Date(), "yyyy-MM-dd"));  
   const [f_entrega, setf_entrega] = useState(format(new Date(), "yyyy-MM-dd"));  
-  const [loading,setLoading]=useState(false); 
+  const [loading,setLoading]=useState(false);
+  const [otros,setOtros]=useState(false); 
     
   var [data, setData]= useState([]);    
   const [dataOriginal, setDataOriginal]=useState([]);
   const [tabledata,setTableData]=useState([]); 
   const[term,setTerm]=useState("");
+  const [fotoEvidencia,setFotoEvidencia]=useState(null);
+  const [rutaImg, setRutaImg]= useState(null);   
 
   const [verAsesor,setverAsesor]=useState(true);
-  const [verAsesorC,setverAsesorC]=useState(false);
   var [estatus, setEstatus] = useState(null); 
   const [zonas, setZonas] = useState([]);
   const [asesores, setasesores] = useState([]);
@@ -284,14 +334,23 @@ const Muestreos=(props)=>{
       comentarios:"",
       idAgen:parseInt(cookies.get('IdAgen')),    
       folio:"",
-      traza:""
+      traza:"",
+      parteMuestreada:"",
+      organico:""
   })    
+
+  const [nvoSector,setNvoSector]=useState({  
+    idMuestreo:parseInt(filaSeleccionada.idMuestreo),
+    cod_Prod:filaSeleccionada.cod_Prod,
+    cod_Campo:parseInt(filaSeleccionada.cod_Campo),    
+    sector:parseInt()
+ })    
 
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('cod_prod');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);    
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(25);
   
   const handleRequestSort = (event, property) => {
       const isAsc = orderBy === property && order === 'asc';
@@ -333,13 +392,22 @@ const Muestreos=(props)=>{
   };
   
   const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
+      setRowsPerPage(parseInt(event.target.value, 25));
       setPage(0);
   };
   
   const isSelected = (name) => selected.indexOf(name) !== -1;
   
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, tabledata.length - page * rowsPerPage);   
+
+  const handleChangeSector=e=>{  
+    const {name, value}=e.target;    
+      setNvoSector(prevState=>({
+        ...prevState,
+        [name]: value
+      }));
+      console.log(nvoSector);    
+  }
 
   const handleChange=e=>{  
   /*   console.log(e.target.value); */
@@ -403,9 +471,31 @@ const Muestreos=(props)=>{
     setproducto(dataObj.producto);
   }
 })   
-}
+  }
 
-const peticionPutEditar=async(e)=>{   
+  //agregar sector
+  const sectorPost=async(e)=>{
+    e.preventDefault();
+    setLoading(true);   
+    await axios.post(url_sector+`/${filaSeleccionada.idMuestreo}`,nvoSector)
+    .then(response=>{
+      setSectores(data.concat(response.data)); 
+      
+    }).catch(error=>{
+      swal({
+        title: error.response.data,
+        text: "Favor de verificar la información",
+        icon: "error",
+        button: "Cerrar",
+      });
+      console.log(error.response.data);
+      console.log(error.request);
+      console.log(error.message); 
+    })
+    setLoading(false);   
+  }
+
+  const peticionPutEditar=async(e)=>{   
   e.preventDefault();
 
   await axios.put(url+`/${filaSeleccionada.idMuestreo}/${cookies.get('IdAgen')}/${0}`,filaSeleccionada)
@@ -474,7 +564,7 @@ const peticionPutEditar=async(e)=>{
     console.log(error.request);
     console.log(error.message); 
   })
-}
+  }
 
   const peticionPutFecha_Muestreo=async()=>{   
         await axios.put(url+`/${filaSeleccionada.idMuestreo}/${cookies.get('IdAgen')}/${filaSeleccionada.sector}`,filaSeleccionada)
@@ -665,11 +755,19 @@ const peticionPutEditar=async(e)=>{
     setLoading(false);   
   }
 
+  /* Tarjeta */
   const peticionPatchTarjeta=async(e)=>{   
     e.preventDefault();
     setLoading(true);    
-        await axios.patch(url+`/${filaSeleccionada.idMuestreo}/${cookies.get('IdAgen')}/${"tarjeta"}`,filaSeleccionada)
-        .then(response=>{         
+    if(cookies.get('IdAgen')==='null'){
+      user=cookies.get('Id');
+    }
+    else{
+      user=cookies.get('IdAgen');
+    } 
+
+    await axios.patch(url+`/${filaSeleccionada.idMuestreo}/${user}/${"tarjeta"}`,filaSeleccionada)
+      .then(response=>{         
             const arrayEditado = tabledata.map(item => (
             item.idMuestreo === filaSeleccionada.idMuestreo ? 
             {
@@ -705,14 +803,18 @@ const peticionPutEditar=async(e)=>{
             } : item
           ))
           setTableData(arrayEditado);
+
+          patchsubirImagen();
+          
           swal({
             title: "Datos guardados correctamente!",
             icon: "success",
             button: "ok",
           });
+
           openClose_ModalTarjeta(); 
 
-        }).catch(error=>{
+      }).catch(error=>{
           swal({
             title: error.response.data,
             text: "Favor de verificar la información",
@@ -722,12 +824,48 @@ const peticionPutEditar=async(e)=>{
           console.log(error.response.data);
           console.log(error.request);
           console.log(error.message); 
-        })
+      }) 
+    setLoading(false); 
+  }
+
+  const subirFoto=e=>{
+    setFotoEvidencia(e); 
+  }
+
+  const patchsubirImagen=async()=>{    
+    const i=new FormData();
+
+   for(let index=0;index<=fotoEvidencia.length;index++){
+      i.append("imagen",fotoEvidencia[index]);
+    } 
+    await axios.patch(url+`/${filaSeleccionada.idMuestreo}`,i)
+    .then(response=>{         
+      console.log(response);
+
+    }).catch(error=>{       
+          console.log(error.response.data);
+          console.log(error.request);
+          console.log(error.message); 
+    })
     setLoading(false);   
   }
 
+  //cargar imagen
+  const getCargarImagen=async()=>{    
+      axios.get(url+`/${filaSeleccionada.idMuestreo}`)
+      .then(res=>{ 
+        setRutaImg(res.data);  
+      }).catch(error=>{
+        console.log(error.response.data);
+        console.log(error.request);
+        console.log(error.message); 
+     })    
+     setmodalTarjeta(true);  
+  }
+   
+  /* Reasignar */
   const peticionPutReasignar=async()=>{     
-        await axios.put(url_campos+`/${cookies.get('IdAgen')}/${asesorReasignado}/${cookies.get('Tipo')}`,filaSeleccionada)
+        await axios.put(url_campos+`/${cookies.get('IdAgen')}/${asesorReasignado}/${cookies.get('Depto')}`,filaSeleccionada)
         .then(response=>{
           var dataNueva= data;
           dataNueva.map(item=>{
@@ -784,10 +922,11 @@ const peticionPutEditar=async(e)=>{
 
   const peticionPostAnalisis=async(e)=>{     
     setLoading(true);   
-     await axios.post(url_analisis+`/${filaSeleccionada.idMuestreo===null? 0:filaSeleccionada.idMuestreo}/${filaSeleccionada.idAnalisis_Residuo===null? 0:filaSeleccionada.idAnalisis_Residuo}/${liberacionUSA}/${liberacionEU}/${filaSeleccionada.sector}`,nvoanalisis)
+     await axios.post(url_analisis+`/${filaSeleccionada.idMuestreo}/${liberacionUSA}/${liberacionEU}`,nvoanalisis)
     .then(response=>{               
-       const arrayEditado = tabledata.map(item => (
-        item.cod_Prod===response.data.cod_Prod && item.cod_Campo===response.data.cod_Campo?
+
+    const arrayEditado = tabledata.map(item => (
+      item.cod_Prod===response.data.cod_Prod && item.cod_Campo===response.data.cod_Campo?
         {
         idMuestreo : item.idMuestreo, 
         idAnalisis_Residuo:item.idAnalisis_Residuo,
@@ -818,28 +957,31 @@ const peticionPutEditar=async(e)=>{
         compras_oportunidad:item.compras_oportunidad,
         fecha_analisis:item.fecha_analisis,
         analisis:response.data.estatus,
-        } : item
-      ))
-      setTableData(arrayEditado);
+      } : item
+    ))
+
+    setTableData(arrayEditado);
      
-      swal({
-        title: "Datos guardados correctamente!",
-        icon: "success",
-        button: "ok",
-      });
+    swal({
+      title: "Datos guardados correctamente!",
+      icon: "success",
+      button: "ok",
+    });
 
       openClose_ModalAnalisis(); 
-        }).catch(error=>{
-          swal({
-            title: error.response.data,
-            text: "Favor de verificar la información",
-            icon: "error",
-            button: "Cerrar",
-          });
-          console.log(error.response.data);
-          console.log(error.request);
-          console.log(error.message); 
-        }) 
+
+    }).catch(error=>{
+      swal({
+      title: error.response.data,
+      text: "Favor de verificar la información",
+      icon: "error",
+      button: "Cerrar",
+    });
+      console.log(error.response.data);
+      console.log(error.request);
+      console.log(error.message); 
+    }) 
+
     setLoading(false);
   }
 
@@ -855,86 +997,119 @@ const peticionPutEditar=async(e)=>{
           setmodalAnalisis(true);
         }if(caso==="Reasignar"){
           setmodalReasignar(true);
-        }if(caso==="Tarjeta"){
-          setmodalTarjeta(true);
+        }if(caso==="Tarjeta")
+        { 
+          setRutaImg(null); 
+
+          getCargarImagen(); 
+
         }if(caso==="Editar_muestreo"){
           setmodalEditar(true);
         }
   }
 
-  const peticionGet=async()=>{
-    await axios.get(url+`/${cookies.get('IdAgen')}/${cookies.get('Tipo')}`)
-    .then(res=>{     
-      setDataOriginal(res.data); 
-     /*  console.log(res.data);  */
-      if(cookies.get('IdAgen')!=='205')
-      {  
-            if(cookies.get('Tipo')=='P')
-            {
-              if(cookies.get('IdAgen')=='1')
-              { 
-                setverAsesor(true);
-              }
-              else{
-                setverAsesor(false);
-              }
-              setactionEditar(true);             
-              setactionCalidad(false);
-              setactionFecha_ejecucion(false);
-              setactionLiberar(true);
-
-              for(const dataObj of res.data)
-              {
-                if(dataObj.liberacion==='S'){
-                setactionLiberar(false);
-                }  
-                else{
+  const peticionGet=async()=>{  
+  if(cookies.get('Depto')!=='null')   
+    {
+      setOtros(false);
+      await axios.get(url+`/${cookies.get('IdAgen')}/${null}/${cookies.get('Depto')}/${null}/${0}`)
+      .then(res=>{     
+      setDataOriginal(res.data);  
+      
+      setactionEditar(true);  
+      
+      if(cookies.get('Depto')==='P')
+      { 
+        if(cookies.get('IdAgen')==='1' || cookies.get('IdAgen')==='5')
+        { 
+          setverAsesor(true);
+        }
+        else{
+          setverAsesor(false);
+        }
+                   
+        setactionCalidad(false);
+        setactionFecha_ejecucion(false);
+        /* setactionLiberar(true); */
+            
+        for(const dataObj of res.data)
+        {
+          console.log(dataObj.liberacion);
+              
+              if(dataObj.liberacion==='S'){
                 setactionLiberar(true);
-                }          
-              }             
-            }
+              }  
+              else if(dataObj.liberacion===null || dataObj.liberacion==='null'){
+                setactionLiberar(true);
+              }          
+              else{
+                setactionLiberar(true);
+              }
+            }             
+      }
 
-            else if(cookies.get('Tipo')=='C'){
-              setverAsesorC(true);
+      else if(cookies.get('Depto')=='C'){
+            setactionCalidad(true);
+            setactionLiberar(false);
+            setactionFecha_ejecucion(false);
+      }
+
+      else if(cookies.get('Depto')=='I'){
+            setactionFecha_ejecucion(true);           
+            setactionLiberar(false);
+
+            if(cookies.get('IdAgen')==='304'){
               setactionCalidad(true);
-              setactionLiberar(false);
-              setactionFecha_ejecucion(false);
-              setactionEditar(false);
-            }
-
-            else if(cookies.get('Tipo')=='I'){
-              setactionFecha_ejecucion(true);
-              setactionCalidad(false);
-              setactionLiberar(false);
-              setactionEditar(false);
-            }
-
-            if(cookies.get('IdAgen')=== '1' || cookies.get('IdAgen')==='5' || cookies.get('IdAgen')==='153' || cookies.get('IdAgen')=='281'){
-              setactionTarjeta(true);
             }
             else{
-              setactionTarjeta(false);
+              setactionCalidad(false);
             }
       }
-      else{            
-              setactionAnalisis(true);
-              setactionFecha_ejecucion(true);
-              setactionCalidad(false);
-              setactionLiberar(false);
-              setactionEditar(false);
-      }                  
-    })
-    handlerCargarAsesores();    
+
+      if(cookies.get('IdAgen')=== '1' || cookies.get('IdAgen')=='281' || cookies.get('IdAgen')=='204'){
+        setactionTarjeta(true);
+      }
+      else{
+        setactionTarjeta(false);
+      }
+
+      if(cookies.get('IdAgen')==='205' || cookies.get('IdAgen')==='216')
+      {       
+        setactionAnalisis(true);
+      }       
+      });
+  }  
+
+  else 
+    {  
+        await axios.get(url+`/${cookies.get('Id')}/${cookies.get('Tipo')}/${null}/${null}/${0}`)
+        .then(res=>{     
+        setDataOriginal(res.data);   
+
+        if(cookies.get('Id')=== '352'){
+          setactionTarjeta(true);
+        }
+
+        setactionAnalisis(false);
+        setactionFecha_ejecucion(false);
+        setactionCalidad(false);
+        setactionLiberar(false);
+        setactionEditar(false);
+        setOtros(true);
+        });
+  }              
+  
+  handlerCargarAsesores();    
   }
       
   useEffect(()=>{    
       peticionGet(); 
-      setTableData(dataOriginal);    
+      setTableData(dataOriginal);  
   },[dataOriginal]) 
     
   //cargar asesores
   const handlerCargarAsesores= function(e){
-      axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${cookies.get("Tipo")}`)
+      axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${cookies.get("Depto")}`)
        .then(res=>{    
         setasesores(res.data); 
         for(const dataObj of res.data)
@@ -998,7 +1173,7 @@ const peticionPutEditar=async(e)=>{
   }
 
   const openClose_ModalTarjeta=()=>{
-   setmodalTarjeta(!modalTarjeta);
+    setmodalTarjeta(!modalTarjeta);
   }
 
   const openClose_ModalEditar=()=>{
@@ -1010,7 +1185,7 @@ const peticionPutEditar=async(e)=>{
     <div className="card card-default">
     <div className="card-header"> 
      <div className="card-header">     
-       <h7 className="font-weight-bold text-secondary">Re-asignar a otro ingeniero</h7>      
+       <h6 className="font-weight-bold text-secondary">Re-asignar a otro ingeniero</h6>      
     </div> 
     <div className="card-body">
     Codigo
@@ -1028,7 +1203,7 @@ const peticionPutEditar=async(e)=>{
           value={filaSeleccionada&&filaSeleccionada.cod_Campo}
         />    
     <br />
-    <h7>Asesor</h7>
+    <h6>Asesor</h6>
     <select name="idAgen_Reasignado" className="form-control" onChange={handleChange} onClick={handlerCargarAsesores}>
       <option value={0}>--Seleccione--</option>
       {
@@ -1052,9 +1227,11 @@ const peticionPutEditar=async(e)=>{
     <div className="card card-default">
       <form onSubmit={peticionPutEditar}>
       <div className="card-header">     
-         <h7 className="font-weight-bold text-secondary">Editar solicitud 
+         <h6 className="font-weight-bold text-secondary d-flex justify-content-center">Editar solicitud </h6>  
+         
+         Asesor: {filaSeleccionada&&filaSeleccionada.asesor}
          <br />
-         Código: {filaSeleccionada&&filaSeleccionada.cod_Prod} - Campo: {filaSeleccionada&&filaSeleccionada.cod_Campo}</h7>      
+         Código: {filaSeleccionada&&filaSeleccionada.cod_Prod} - Campo: {filaSeleccionada&&filaSeleccionada.cod_Campo}    
       </div> 
       <div className="card-body">
 
@@ -1119,6 +1296,14 @@ const peticionPutEditar=async(e)=>{
           maxLength={10} minLength={10} variant="outlined"
         />     
         </Grid>
+        <Grid item xs={12} md={12} lg={6}>
+        Cajas estimadas:
+            <input 
+            type="text"  
+            className="form-control" name="cajasEstimadas" variant="outlined"
+            onChange={handleChange} autoComplete="off"
+          />     
+        </Grid>
       </Grid>
         </div>
 
@@ -1127,8 +1312,7 @@ const peticionPutEditar=async(e)=>{
         <button disabled={loading ? true: false}
         className="btn btn-primary  active float-right" type="submit">
         {loading ? "Espere..." : "Guardar"}</button>
-             
-      <Button className="btn btn-secondary btn-sm active float-right" onClick={()=>openClose_ModalEditar()}>Cerrar</Button> 
+        <button  className="btn btn-secondary active float-right" type="submit" onClick={()=>openClose_ModalEditar()}>Cerrar</button>
       </div>      
          
       </form>
@@ -1141,16 +1325,21 @@ const peticionPutEditar=async(e)=>{
     <div className="card card-default">
       <form onSubmit={peticionPutCalidad}>
       <div className="card-header">     
-         <h7 className="font-weight-bold text-secondary">Estatus de calidad</h7>      
+         <h6 className="font-weight-bold text-secondary">Estatus de calidad</h6>      
       </div> 
       <div className="card-body">
-        Codigo
+
+      <div className="row">
+    <div className="col-md-6 col-sm-12">
+       Codigo
       <input 
           type="text" disabled
           className="form-control"
           id="cod_Prod" name="cod_Prod"
           value={filaSeleccionada&&filaSeleccionada.cod_Prod}
         /> 
+     </div>
+    <div className="col-md-6 col-sm-12">
       Campo
       <input 
           type="text" disabled
@@ -1158,6 +1347,8 @@ const peticionPutEditar=async(e)=>{
           id="cod_Campo" name="cod_Campo"
           value={filaSeleccionada&&filaSeleccionada.cod_Campo}
         />    
+       </div>
+       </div>
          
       {actionCalidad?
       <>
@@ -1194,12 +1385,17 @@ const peticionPutEditar=async(e)=>{
         :
         <>
         { filaSeleccionada&&filaSeleccionada.estatus ===null?
-            <p>SIN EVALUAR</p>
+          <div className="alert alert-danger mt-1" role="alert">
+            SIN EVALUAR
+          </div> 
           :
           <>
     <div className="table-responsive table-condensed table-sm tabla mt-2">
     <table className="table table-hover" style={{fontSize: 11, textAlign: 'center'}}>
-    <thead className="thead-light">     
+    <thead className="thead-light">  
+      <tr> 
+        <th colSpan="3">Realizado por: {filaSeleccionada&&filaSeleccionada.asesorC}</th>
+      </tr>   
       <tr> 
         <th>Estatus</th>
         <th>Incidencia</th>
@@ -1207,20 +1403,21 @@ const peticionPutEditar=async(e)=>{
       </tr>
     </thead>
     <tbody style={{backgroundColor: 'white'}}> 
+     
       <tr>
       <td>  
         
-          { filaSeleccionada&&filaSeleccionada.estatus === '3'?
+          {filaSeleccionada&&filaSeleccionada.estatus === '3'?
           <p>PENDIENTE</p>
           :
           <p>APTA</p>
           }
-          
-      
+                
       </td>
       <td>{filaSeleccionada&&filaSeleccionada.incidencia}</td>
       <td>{filaSeleccionada&&filaSeleccionada.propuesta}</td>
-      </tr>      
+      </tr> 
+
    </tbody>
    </table>
    </div>
@@ -1249,7 +1446,7 @@ const peticionPutEditar=async(e)=>{
     <div className={styles.modal}>
       <div className="card card-default">
       <div className="card-header">    
-         <h7 className="font-weight-bold text-secondary">Fecha de ejecución</h7>      
+         <h6 className="font-weight-bold text-secondary">Fecha de ejecución</h6>      
       </div> 
       <div className="card-body">
       <div className="row">   
@@ -1273,26 +1470,58 @@ const peticionPutEditar=async(e)=>{
           value={filaSeleccionada&&filaSeleccionada.cod_Campo}
         />      
         </Grid>       
+        {actionFecha_ejecucion?
+        <>
         <Grid item xs={12} md={12} lg={6}>
         Fecha de ejecución:     
         <input 
-          type="date" 
-          className="form-control"
-          name="fecha_ejecucion"
-          onChange={handleChange} autoComplete="off"
-          value={filaSeleccionada&&filaSeleccionada.fecha_ejecucion}
+        type="date" 
+        className="form-control"
+        name="fecha_ejecucion"
+        onChange={handleChange} autoComplete="off"
+        value={filaSeleccionada&&filaSeleccionada.fecha_ejecucion}
         />   
-        </Grid>   
+        </Grid> 
+
         <Grid item xs={12} md={12} lg={6}>
-        Sector: 
+        Sector:     
         <input 
+        type="text" 
+          className="form-control"
+        name="sector"
+        onChange={handleChange} autoComplete="off"    
+        />   
+        </Grid> 
+         </>
+        :null        
+        }
+
+        {/* <Grid item xs={12} md={12} lg={6}>
+
+        <form onSubmit={sectorPost}>
+        <div className="row">
+        <div className="col-9">                 
+           Sector: 
+          <input 
           type="text" 
           className="form-control"
           name="sector" 
-          onChange={handleChange} 
-        />             
+          onChange={handleChangeSector} 
+          />  
+         </div>
+
+         <div className="col-2 m-0 p-0">       
+          <button className="btn btn-primary btn-sm active ml-0" style={{marginTop: '23px'}}
+            type="submit">
+            <i className="fas fa-plus"></i>
+          </button>           
+         </div>
+         </div>
+        </form>
+
         </Grid> 
-      </Grid>
+ */}
+      </Grid>  
       </div>
       
     <div className="col-md-12 mt-2"> 
@@ -1300,7 +1529,10 @@ const peticionPutEditar=async(e)=>{
       <Grid item xs={12} md={12} lg={12}>
         <div className="table-responsive table-condensed table-sm tabla" style={{fontSize: 11, textAlign: 'center'}} >
         <table className="table table-hover" id="tblSectores">
-        <thead className="thead-light">     
+        <thead className="thead-light">   
+        <tr> 
+        <th colSpan="2">Asesor {filaSeleccionada&&filaSeleccionada.asesorI}</th> 
+        </tr>
         <tr> 
         <th>Sectores agregados</th>
         <th>Borrar</th>
@@ -1313,8 +1545,14 @@ const peticionPutEditar=async(e)=>{
       <tr>
       <td>{item.sector}</td> 
       <td>
-      <Button className="m-0 p-0" color="secondary" endIcon={<Clear />}  onClick={()=>deleteSector(item.id)}>                            
-      </Button>
+      {actionFecha_ejecucion?
+        <>
+         <Button className="m-0 p-0" color="secondary" endIcon={<Clear />}  onClick={()=>deleteSector(item.id)}>                            
+          </Button>
+         </>
+        :null        
+      }
+     
       </td>     
       </tr> 
       </React.Fragment>
@@ -1332,7 +1570,12 @@ const peticionPutEditar=async(e)=>{
     </div>
    </div>
    <div className="card-footer">
-     <Button className="btn btn-primary btn-sm active float-right" onClick={()=>peticionPutFecha_Muestreo()}>Guardar</Button>
+    {actionFecha_ejecucion?
+        <>
+         <Button className="btn btn-primary btn-sm active float-right" onClick={()=>peticionPutFecha_Muestreo()}>Guardar</Button>
+         </>
+        :null        
+      }
      <Button className="btn btn-secondary btn-sm active float-right" onClick={()=>openClose_ModalFecha_muestreo()}>Cerrar</Button>
   </div>
   </div>
@@ -1345,7 +1588,7 @@ const peticionPutEditar=async(e)=>{
       <div className="card-header">
       </div> 
       <div className="card-body">
-         <h7>¿Esta seguro de liberar esta solicitud?</h7>
+         <h6>¿Esta seguro de liberar esta solicitud?</h6>
       </div>
       <div className="card-footer float-right">
       <form onSubmit={peticionPatchLiberar}>          
@@ -1474,6 +1717,7 @@ const peticionPutEditar=async(e)=>{
             <option value={0}>Seleccione</option>          
             <option value={'AGQ'}>AGQ</option>
             <option value={'AGROLAB'}>AGROLAB</option>
+            <option value={'PRIMUSLAB'}>PRIMUSLAB</option>
           </select>        
       </Grid>
 
@@ -1499,6 +1743,16 @@ const peticionPutEditar=async(e)=>{
             </> 
         }
 
+        <Grid item xs={12} md={12} lg={6}>        
+        Parte Muestreada: 
+          <select name="parteMuestreada" className="form-control" onChange={handleChangeAnalisis}>
+            <option value={0}>Seleccione</option>      
+            <option value={'J'}>FOLLAJE</option>    
+            <option value={'F'}>FRUTA</option>
+            <option value={'S'}>SUELO</option>
+          </select>             
+        </Grid>
+
       <Grid item xs={12} md={12} lg={6}>
         Número de análisis:  
         <input 
@@ -1515,6 +1769,13 @@ const peticionPutEditar=async(e)=>{
         defaultChecked={false} className="mt-4"
         onChange={handleChangeAnalisis}
         /> Traza    
+    </Grid>
+
+    <Grid item xs={12} md={12} lg={6}>  
+      <input type="checkbox" name="organico"
+        defaultChecked={false} className="mt-4"
+        onChange={handleChangeAnalisis}
+        /> Organico    
     </Grid>
 
       <Grid item xs={12} md={12} lg={12}>
@@ -1551,14 +1812,41 @@ const peticionPutEditar=async(e)=>{
     <div className="card card-default">
     <form onSubmit={peticionPatchTarjeta}>
       <div className="card-header">     
-        <h7 className="font-weight-bold text-secondary">Liberar entrega de tarjeta</h7>      
+        <h6 className="font-weight-bold text-secondary">Entrega de tarjeta</h6>           
       </div> 
-      <div className="card-body">    
+      <div className="card-body">  
 
-      <input type="checkbox" name="tarjeta"
+    <div className="row">
+    <div className="col-md-6 col-sm-12">
+       Codigo
+      <input 
+          type="text" disabled
+          className="form-control"
+          id="cod_Prod" name="cod_Prod"
+          value={filaSeleccionada&&filaSeleccionada.cod_Prod}
+        /> 
+     </div>
+    
+    <div className="col-md-6 col-sm-12">
+      Campo
+      <input 
+          type="text" disabled
+          className="form-control"
+          id="cod_Campo" name="cod_Campo"
+          value={filaSeleccionada&&filaSeleccionada.cod_Campo}
+        />    
+       </div>
+
+    <div className="col-md-12 col-sm-12 mt-2">
+    {actionTarjeta?
+    <>  
+    {filaSeleccionada&&filaSeleccionada.idAgen_Tarjeta===null ?
+    <>
+    <input type="checkbox" name="tarjeta"
         defaultChecked={false} className="m-2"
         onChange={handleChange}
         /> Autorizar 
+
       <br/>
 
       Justifique:     
@@ -1568,16 +1856,116 @@ const peticionPutEditar=async(e)=>{
           rows="3"        
           name="liberar_Tarjeta"
           onChange={handleChange} autoComplete="off"
-        />           
-    
-      </div>    
-      <div className="card-footer">            
+        />  
+
+         <br/>
+
+      Evidencia
+         <input type="file" name="imagen"  
+         className="m-2" onChange={(e)=>subirFoto(e.target.files)} />   
+    </>
+    :
+    null
+    }      
+    </>
+    :
+    null
+    } 
+ </div>
+          
+    <div className="col-md-12 col-sm-12 mt-1"> 
+          {filaSeleccionada&&filaSeleccionada.tarjeta==='N'?
+           <div className="alert alert-danger" role="alert">
+           No entregar tarjeta
+          </div>
+           :
+           <>
+           {filaSeleccionada&&filaSeleccionada.tarjeta==='S' && filaSeleccionada&&filaSeleccionada.idAnalisis_Residuo===null && filaSeleccionada&&filaSeleccionada.idAgen_Tarjeta===null?
+           <>
+            <div className="alert alert-danger" role="alert">
+              No entregar tarjeta
+            </div>
+            <div className="list-group">
+            <ul className="list-group list-group-flush">
+              <li className="list-group-item">En espera de resultado de análisis</li>
+            </ul>
+            </div> 
+           </>
+           :
+           <>
+           {filaSeleccionada&&filaSeleccionada.tarjeta==='S' && filaSeleccionada&&filaSeleccionada.analisis==='L' && filaSeleccionada&&filaSeleccionada.idAgen_Tarjeta===null?
+           <>
+            <div className="alert alert-success" role="alert">
+            Entregar tarjeta
+           </div>
+           </>
+           :
+           <>
+           {filaSeleccionada&&filaSeleccionada.tarjeta==='S' && filaSeleccionada&&filaSeleccionada.analisis!=='L' && filaSeleccionada&&filaSeleccionada.idAgen_Tarjeta===null?
+           <>
+            <div className="alert alert-danger" role="alert">
+              No entregar tarjeta
+            </div>
+            <div className="list-group">
+            <ul className="list-group list-group-flush">
+              <li className="list-group-item">Análisis no Liberado</li>
+            </ul>
+            </div>  
+           </>
+           :
+           <>
+           {filaSeleccionada&&filaSeleccionada.idAgen_Tarjeta!==null ?
+           <>
+           <div className="alert alert-success" role="alert">
+            Entregar tarjeta
+           </div>          
+          
+           <div className="list-group">
+            <ul className="list-group list-group-flush">
+              <li className="list-group-item">Autorizado por: {filaSeleccionada&&filaSeleccionada.agen_Tarjeta}</li>
+              <li className="list-group-item">{filaSeleccionada&&filaSeleccionada.liberar_Tarjeta}</li>
+              <li className="list-group-item">      
+                  {filaSeleccionada&&filaSeleccionada.imageAutoriza !== null ?
+                  <>        
+                   <img id="screenShot" src={rutaImg} alt="" /> 
+                  </>
+                  :
+                  null
+                  }
+              </li>
+            </ul>
+            </div>   
+           
+           </>
+           :
+           <div className="alert alert-warning" role="alert">
+           Pendiente
+          </div>
+           }    
+           </>
+           }    
+           </> 
+           }          
+           </>
+            }          
+            </>
+           }  
+        </div>  
+    </div>
+    </div> 
+      
+    <div className="card-footer">     
+        {actionTarjeta?
+        <>     
         <button disabled={loading ? true: false}
         className="btn btn-primary btn-sm active float-right" type="submit">
         {loading ? "Espere..." : "Guardar"}</button>   
+        </>
+        :null
+        }
         <button className="btn btn-secondary btn-sm active float-right" onClick={()=>openClose_ModalTarjeta()}>Cerrar</button>        
-      </div>
-    </form>
+      </div>  
+    </form>       
     </div>    
     </div>
   )
@@ -1721,7 +2109,6 @@ return(
      </div>
 
 <Paper className={styles.paper}>  
-
   <Grid item xs={12} md={12} lg={12}>
   <Grid container spacing={1}>
   <Grid item xs={12} md={6} lg={6}>
@@ -1731,313 +2118,309 @@ return(
     </Typography>      
   </Toolbar>
   </Grid>
-  <Grid item xs={12} md={6} lg={6}>
-     
-  <input className="form-control" placeholder="Buscar ..." name="term" onChange={e => setTerm(e.target.value)}/>
+  
+  <Grid item xs={12} md={6} lg={6}>     
+    <input className="form-control" placeholder="Buscar ..." name="term" 
+    onChange={e => setTerm(e.target.value)}/>
   </Grid>
+  
   </Grid>
   </Grid>
 
   <TableContainer>
   <div className="table-responsive table-condensed table-sm">
+ 
+
   <table className="table table-hover" style={{fontSize: 10, textAlign: 'center'}}>
-  <EnhancedTableHead
+ <EnhancedTableHead
       classes={styles}
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={tabledata.length}
-              className="thead-light"
-  />
+      numSelected={selected.length}
+      order={order}
+      orderBy={orderBy}
+      onSelectAllClick={handleSelectAllClick}
+      onRequestSort={handleRequestSort}
+      rowCount={tabledata.length}
+      className="thead-light"
+  /> 
     <tbody>  
-    {stableSort(tabledata, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .filter(searchTerm(term)).map((row, index) => {
-                  const isItemSelected = isSelected(row.idMuestreo);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+  {stableSort(tabledata, getComparator(order, orderBy))
+     
+      .filter(searchTerm(term)).map((row, index) => 
+      {
+      const isItemSelected = isSelected(row.idMuestreo);     
 
-                  return (
-                    <tr                       
-                      onClick={(event) => handleClick(event, row.idMuestreo)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.idMuestreo}
-                      selected={isItemSelected}
-                      className={styles.tablecell}>                     
-                      
-                      <td>
-                      {actionEditar?
-                          <>
-                          <Button endIcon={<EditTwoToneIcon />} 
-                           onClick={()=>seleccionarRegistro(row, "Editar_muestreo")}>                            
-                         </Button> 
-                         </>    
-                         :
-                         <></>
-                         }
-                      </td>
+      return (
+        <tr                       
+          onClick={(event) => handleClick(event, row.idMuestreo)}
+          role="checkbox"
+          aria-checked={isItemSelected}
+          tabIndex={-1}
+          key={row.idMuestreo}
+          selected={isItemSelected}
+          className={styles.tablecell}>  
+          <td>
+          {actionEditar?
+          <>
+          <Button endIcon={<EditTwoToneIcon />} 
+            onClick={()=>seleccionarRegistro(row, "Editar_muestreo")}>                            
+          </Button> 
+          </>    
+          :
+          <></>
+          }
+      </td>
+        <td component="th" scope="row" padding="none">{row.cod_Prod}
+        <br/>
+        {row.abrevP}</td>
+        <td align="center">{row.productor}</td>
+        <td align="center">{row.cod_Campo} - {row.campo}</td>
+        <td align="center">{row.sector}</td>
+                
+        {row.compras_oportunidad ==='S' ? 
+          <td align="center"> SI </td>
+            : 
+          <td align="center"> NO </td>
+        }  
 
-                      <td component="th" id={labelId} scope="row" padding="none">{row.cod_Prod}
-                      {verAsesor?
-                      <p>{row.asesor}</p>
-                        :
-                        <></>
-                      }
-                      </td>
+        <td align="center">
+        {row.fecha_solicitud !== null ? 
+          <>
+            {moment(row.fecha_solicitud).format('L')}
+            </>    
+             :
+           <></>
+            }             
+          </td>
 
-                      <td align="center">{row.productor}</td>
-                      <td align="center">{row.cod_Campo} - {row.campo}</td>
-                      <td align="center">{row.sector}</td>
-                      
-                      {row.compras_oportunidad ==='S' ? 
-                       <td align="center"> SI </td>
-                        : 
-                       <td align="center"> NO </td>
-                      }  
+          <td align="center">
+            {row.inicio_cosecha !== null ? 
+            <>
+            {moment(row.inicio_cosecha).format('L')}
+            </>    
+              :
+            <></>
+            }             
+          </td>
 
-                      <td align="center">
-                       {row.fecha_solicitud !== null ? 
-                       <>
-                       {moment(row.fecha_solicitud).format('L')}
-                       </>    
-                        :
-                        <></>
-                      }             
-                      </td>
+          <td align="center">{row.ubicacion}</td>
+          <td align="center">{row.telefono}</td>  
+          <td align="center">{row.cajasEstimadas}</td>  
+               
+          {row.liberacion ==='S' ? 
+          <td align="center" bgcolor="LightGreen"> <DoneIcon/> </td>
+          : 
+          <td align="center" bgcolor="Pink">
+            {actionLiberar?
+            <>
+            <Button variant="primary" endIcon={<AddBox />} 
+              onClick={()=>seleccionarRegistro(row, "Liberar_muestreo")}
+            >                            
+            </Button>
+            </>    
+            :
+            <PriorityHighIcon />
+            }
+          </td>
+          }                       
 
-                      <td align="center">
-                       {row.inicio_cosecha !== null ? 
-                       <>
-                       {moment(row.inicio_cosecha).format('L')}
-                       </>    
-                        :
-                        <></>
-                      }             
-                      </td>
+          {row.idMuestreo !== null && row.fecha_ejecucion !== null ? 
+          <>
+            <td align="center">{moment(row.fecha_ejecucion).format('L')}
+              <br />
+              <Button variant="primary" endIcon={<AddBox />} 
+                onClick={()=>seleccionarRegistro(row, "Fecha_muestreo")}>                            
+              </Button>             
+            </td>
+            </>
+            : 
+            <td align="center" bgcolor="Pink"> 
+            {row.idMuestreo !== null && actionFecha_ejecucion?
+              <>
+              <Button variant="primary" endIcon={<AddBox />} 
+              onClick={()=>seleccionarRegistro(row, "Fecha_muestreo")}
+              >                            
+              </Button>
+              </>    
+              :
+              <PriorityHighIcon />
+              }
+              </td>
+            }                         
+                
+            {row.idAnalisis_Residuo !== null ?                        
+            <>  
+              {row.analisis === 'R' ?                        
+                <td align="center" bgcolor="Tomato"> CON RESIDUOS 
+                {actionAnalisis?
+                <>
+                <Button variant="primary" endIcon={<AddBox />} 
+                  onClick={()=>seleccionarRegistro(row, "Analisis_residuo")}
+                >                            
+                </Button>
+                </>    
+                :
+                false
+              } 
+                
+              </td>
+              :
+              <> 
+              {row.analisis === 'P' ?                        
+                <td align="center" bgcolor="Gainsboro"> EN PROCESO 
+                {actionAnalisis?
+                <>
+                <Button variant="primary" endIcon={<AddBox />} 
+                  onClick={()=>seleccionarRegistro(row, "Analisis_residuo")}
+                 >                            
+                </Button>  
+                </>    
+                :
+               false
+                } 
+                </td>
+                :
+                <> 
+                {row.analisis === 'F' ?                        
+                  <td align="center" bgcolor="yellow"> FUERA LIMITE 
+                    {actionAnalisis?
+                    <>
+                    <Button variant="primary" endIcon={<AddBox />} 
+                    onClick={()=>seleccionarRegistro(row, "Analisis_residuo")}
+                    >                            
+                    </Button> 
+                  </>    
+              :
+              false
+              } 
+              </td>
+                :
+                    <> 
+                    <td align="center" bgcolor="LightGreen"> LIBERADO</td>
+                    </>                      
+                    }  
+                    </>                      
+                    }  
+                    </>                      
+                  }                        
+                </>                    
+                :
+                <>
+                <td align="center" bgcolor="Pink"> 
+                 {actionAnalisis?
+                <>
+                 <td align="center">
+                 <Button variant="primary" endIcon={<AddBox />} 
+                    onClick={()=>seleccionarRegistro(row, "Analisis_residuo")}
+                    >                            
+                    </Button>          
+                 </td>
+                </>    
+                :
+                <PriorityHighIcon /> 
+                }  
+                </td>                        
+                </>                            
+                } 
+                                      
+                {row.estatus !== null ? 
+                <> 
+                  {row.estatus === '3' ? 
+                  <td align="center" bgcolor="tomato">PENDIENTE                         
+                   <Button variant="primary" endIcon={<AddBox />} 
+                     onClick={()=>seleccionarRegistro(row, "Calidad")}
+                     >                             
+                   </Button>
+                  
+                  </td>    
+                  :                                                
+                  <td align="center" bgcolor="LightGreen">APTA                        
+                   <Button variant="primary" endIcon={<AddBox />} 
+                     onClick={()=>seleccionarRegistro(row, "Calidad")}
+                     >                              
+                   </Button>
+                   
+                  </td>                                  
+                  }
+                  </> 
+                  :
+                  <td align="center" bgcolor="Pink"> 
+                   <Button variant="primary" endIcon={<AddBox />} 
+                     onClick={()=>seleccionarRegistro(row, "Calidad")}
+                     >                               
+                   </Button></td>   
+                }
 
-                      <td align="center">{row.ubicacion}</td>
-                      <td align="center">{row.telefono}</td>  
-                      
-                       {row.liberacion ==='S' ? 
-                       <td align="center" bgcolor="LightGreen"> <DoneIcon/> </td>
-                        : 
-                       <td align="center" bgcolor="Pink">
-                         {actionLiberar?
-                         <>
-                         <Button variant="primary" endIcon={<AddBox />} 
-                          onClick={()=>seleccionarRegistro(row, "Liberar_muestreo")}
-                          >                            
-                        </Button>
-                        </>    
-                        :
-                         <PriorityHighIcon />
-                        }
-                       </td>
-                      }                       
-
-                      {row.idMuestreo !== null && row.fecha_ejecucion !== null ? 
-                      <>
-                        <td align="center">{moment(row.fecha_ejecucion).format('L')}
-                        {actionFecha_ejecucion?
-                          <>
-                          <Button variant="primary" endIcon={<AddBox />} 
-                           onClick={()=>seleccionarRegistro(row, "Fecha_muestreo")}>                            
-                         </Button>
-                         </>    
-                         :
-                         <></>
-                         }
-                         </td>
-                         </>
-                        : 
-                       <td align="center" bgcolor="Pink"> 
-                        {row.idMuestreo !== null && actionFecha_ejecucion?
-                         <>
-                         <Button variant="primary" endIcon={<AddBox />} 
-                          onClick={()=>seleccionarRegistro(row, "Fecha_muestreo")}
-                          >                            
-                        </Button>
-                        </>    
-                        :
-                        <PriorityHighIcon />
-                        }
-                       </td>
-                      }                         
-                      
-                      {row.idAnalisis_Residuo !== null ?                        
-                        <>  
-                        {row.analisis === 'R' ?                        
-                          <td align="center" bgcolor="Tomato"> CON RESIDUOS 
-                          {actionAnalisis?
-                          <>
-                          <Button variant="primary" endIcon={<AddBox />} 
-                          onClick={()=>seleccionarRegistro(row, "Analisis_residuo")}
-                          >                            
-                          </Button>
-                         </>    
-                      :
-                     false
-                      } 
-                      
-                      </td>
-                          :
-                          <> 
-                          {row.analisis === 'P' ?                        
-                          <td align="center" bgcolor="Gainsboro"> EN PROCESO 
-                          {actionAnalisis?
-                          <>
-                           <Button variant="primary" endIcon={<AddBox />} 
-                          onClick={()=>seleccionarRegistro(row, "Analisis_residuo")}
-                          >                            
-                          </Button>  
-                          </>    
-                      :
-                     false
-                      } 
-                      </td>
-                        :
-                        <> 
-                          {row.analisis === 'F' ?                        
-                          <td align="center" bgcolor="yellow"> FUERA LIMITE 
-                          {actionAnalisis?
-                          <>
-                          <Button variant="primary" endIcon={<AddBox />} 
-                          onClick={()=>seleccionarRegistro(row, "Analisis_residuo")}
-                          >                            
-                          </Button> 
-                        </>    
-                      :
-                     false
-                      } 
-                      </td>
-                          :
-                          <> 
-                          <td align="center" bgcolor="LightGreen"> LIBERADO</td>
-                          </>                      
-                          }  
-                          </>                      
-                          }  
-                          </>                      
-                        }                        
-                      </>                    
-                      :
-                      <>
-                      <td align="center" bgcolor="Pink"> 
-                       {actionAnalisis?
-                      <>
-                       <td align="center">
-                       <Button variant="primary" endIcon={<AddBox />} 
-                          onClick={()=>seleccionarRegistro(row, "Analisis_residuo")}
-                          >                            
-                          </Button>          
-                       </td>
-                      </>    
-                      :
-                      <PriorityHighIcon /> 
-                      }  
-                      </td>                        
-                      </>                            
-                      } 
-                                            
-                      {row.estatus !== null ? 
-                      <> 
-                        {row.estatus === '3' ? 
-                        <td align="center" bgcolor="tomato">PENDIENTE
-                          {verAsesorC ?
-                          <p>{row.asesorC}</p>
-                          :
-                          <></>
-                          }
-                        </td>    
-                        :                                                
-                        <td align="center" bgcolor="LightGreen">APTA
-                          {verAsesorC ?
-                          <p>{row.asesorC}</p>
-                          :
-                          <></>
-                          }
-                        </td>                                  
-                        }
-                        </> 
-                        :
-                        <td align="center" bgcolor="Pink"> <PriorityHighIcon /> </td>   
-                      }
-                       
-                       <td> 
-                         <Button variant="primary" endIcon={<AddBox />} 
-                           onClick={()=>seleccionarRegistro(row, "Calidad")}
-                           >                             
-                         </Button>
-                      </td>
-                      
-                       {row.tarjeta !== null && row.analisis === 'L' && (row.estatus==='1' || row.estatus==='2')?
-                       <> 
-                        {row.tarjeta === 'S' ? 
-                        <td align="center" bgcolor="LightGreen"><DoneIcon/></td>    
-                        :                                                
-                        <td align="center" bgcolor="Pink">
-                        {actionTarjeta?
-                          <>
-                            <Button variant="primary" endIcon={<AddBox />} onClick={()=>seleccionarRegistro(row, "Tarjeta")}>                            
-                            </Button>
-                          </>
-                        :
-                        <PriorityHighIcon />
-                        } 
-                        </td>                               
-                        }   
-                        </>
-                        : 
-                        <>
-                        <td align="center" bgcolor="Pink"> 
-                        {actionTarjeta?
-                        <>
-                          <Button variant="primary" endIcon={<AddBox />} onClick={()=>seleccionarRegistro(row, "Tarjeta")}>                            
-                          </Button>
-                        </>
-                        :
-                        <PriorityHighIcon />
-                        } 
-                        </td>        
-                        </>
-                      }
-
-                      <td align="center"> 
-                        <Button variant="primary" endIcon={<AddBox />}  onClick={()=>seleccionarRegistro(row, "Reasignar")}>                            
-                        </Button>
-                    </td>
-                    </tr>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <tr style={{ height: (33) * emptyRows }}>
-                  <td colSpan={16} />
-                </tr>
-              )} 
+                  {row.tarjeta === 'S' && row.analisis === 'L' ?
+                  <>        
+                    <td align="center" bgcolor="LightGreen">
+                    <Button variant="primary" endIcon={<AddBox />} onClick={()=>seleccionarRegistro(row, "Tarjeta")}> 
+                    <DoneIcon/>   
+                    </Button>                      
+                    </td>                
+                  </>
+                  :
+                  <>                         
+                  {row.idAgen_Tarjeta !== null ?
+                  <>        
+                    <td align="center" bgcolor="LightGreen">
+                    <Button variant="primary" endIcon={<AddBox />} onClick={()=>seleccionarRegistro(row, "Tarjeta")}> 
+                    <DoneIcon/>   
+                    </Button>                      
+                    </td>                
+                  </>
+                  :
+                  <>                         
+                   <td align="center" bgcolor="Pink">
+                    <Button variant="primary" endIcon={<AddBox />} onClick={()=>seleccionarRegistro(row, "Tarjeta")}>                            
+                    </Button>                      
+                    </td>  
+                  </>
+                  }   
+                  </>
+                  }   
+                                      
+                {otros===false?
+                <td align="center"> 
+                  <Button variant="primary" endIcon={<AddBox />}  onClick={()=>seleccionarRegistro(row, "Reasignar")}>                            
+                  </Button>
+                </td>
+                :null
+                }
+               
+              </tr>
+        );
+      })}
+      {emptyRows > 0 && (
+        <tr style={{ height: (33) * emptyRows }}>
+          <td colSpan={16} />
+        </tr>
+      )} 
    </tbody>
    </table>
   </div>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+  </TableContainer>
+      {/*   <TablePagination
+          rowsPerPageOptions={[25,50,75]}
           component="div"
           count={tabledata.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-      </Paper>
+        /> */}
+  </Paper>
 
-<div>
-{/*     <MaterialTable columns={rows} data={tabledata} title="" icons={tableIcons} actions={[   
+{/* <div>
+    <MaterialTable columns={rows} data={tabledata} title=""  
+    localization={{header:{actions:''}}}  
+    initialState= {{ pageIndex: 0,}}   
+    options={{actionsColumnIndex:-1, headerStyle: { backgroundColor: "#B0C4DE", color: "black", fontWeight:'bold', fontSize: 11 }}}
+    icons={tableIcons}
+    actions={[
       {
-        icon:'library_add',
-        iconProps: { style: { fontSize: "15px", color: "black" } },
-        tooltip: "Reasignar código",
+        icon: () => <Edit />,
+        tooltip:'Reasignar código',
+        iconProps: { style: { fontSize: "15px", color: "black" } }, 
         name:"Reasignar",
         onClick:(event,rowData)=>seleccionarRegistro(rowData, "Reasignar")
     },
@@ -2073,22 +2456,14 @@ return(
         tooltip: "Resultado del nálisis",
         onClick:(event,rowData)=>seleccionarRegistro(rowData, "Analisis_residuo")
     }:false
-    ]}
-
-    options={{
-      actionsCellStyle: {
-        backgroundColor: "#B0C4DE",
-        color: "black"
-      },
-      headerStyle: { backgroundColor: "#B0C4DE", color: "black", fontWeight:'bold' }
-    }}
-    options={{actionsColumnIndex:-1}} 
-    className={styles.table}
-    localization={{header:{actions:''}}}  
-    initialState= {{ pageIndex: 0,}}   
+  ]}
+  options={{
+    actionsColumnIndex:-1,       
+  }}
+  localization={{header:{actions:''}}}    
     /> 
- */}
- </div>
+
+ </div> */}
  
 <Modal open={modalCalidad} onClose={openClose_ModalCalidad}>{evaluar_calidad}</Modal>
 

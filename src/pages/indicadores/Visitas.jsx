@@ -98,7 +98,7 @@ const Visitas=(props)=>{
   }
 
   useEffect(()=>{
-    if(cookies.get('IdAgen')==='1')
+    if(cookies.get('IdAgen')==='1' || cookies.get('IdAgen')==='5')
     {
       setAdmin(true);
     }

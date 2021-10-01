@@ -110,9 +110,10 @@ const rows=[
 const Financiamiento=(props)=>{  
   const styles=useStyles(); 
   const url="https://giddingsfruit.mx/ApiIndicadores/api/seguimiento";   
-  
+  //const url="https://localhost:44344/api/seguimiento";    
   const cookies = new Cookies(); 
   const [data, setData]= useState([]);
+  const [estatusList, setEstatusList]= useState([]);
   const [enviados, setEnviados]= useState([]);
   const [sinEnviar,setSinEnviar]=useState([]);
   const [modoEdicion,setmodoEdicion]=useState(false); 
@@ -125,7 +126,7 @@ const Financiamiento=(props)=>{
   const [admin, setAdmin] = useState(false);
   let idagen, recipient;
   const [asesor, setAsesor] = useState(null); 
-  const [estatus, setEstatus] = useState(null); 
+  const [descEstatus, setDescEstatus] = useState(null); 
   const [nom_p, setnom_p] = useState(null); 
   const [asesores, setAsesores] = useState([]);
   const [modalEliminar,setModalEliminar]=useState(false);
@@ -154,9 +155,10 @@ const Financiamiento=(props)=>{
     let index=e.nativeEvent.target.selectedIndex;    
     
     if(index !== undefined){
-    setEstatus(e.nativeEvent.target[index].text); 
+    setDescEstatus(e.nativeEvent.target[index].text); 
+    console.log(descEstatus);
     }
-   
+
     const {name, value}=e.target;    
       setfilaSeleccionada(prevState=>({
         ...prevState,
@@ -176,7 +178,6 @@ const Financiamiento=(props)=>{
   const peticionGet=async()=>{       
     await axios.get(url+`/${cookies.get('Id')}/${idagen}`)
       .then(res=>{ 
-        console.log(res.data);
         if(res.data.item1 !== null)
         { 
           setSinEnviar(res.data.item1); 
@@ -187,14 +188,14 @@ const Financiamiento=(props)=>{
         setEnviados(res.data.item2); 
       }     
     }).catch(error=>{     
-      console.log(error.response);
-      console.log(error.request.status);
-      console.log(error.message);
+      console.log(error.response.data);
+      console.log(error.request);
+      console.log(error.message); 
     })            
   }
     
   useEffect(()=>{ 
-  if(cookies.get('Id')==='391'){
+  if(cookies.get('Id')==='352'){
     setAdmin(true);
     idagen=0;
   }       
@@ -207,7 +208,8 @@ const Financiamiento=(props)=>{
     }
     setAdmin(false);    
   } 
-  setTimeout(peticionGet, 150000);  
+  peticionGet();
+  /* setTimeout(peticionGet, 150000);   */
   },[])
  
   const eliminar=async(id)=>{  
@@ -258,18 +260,12 @@ const Financiamiento=(props)=>{
   
   await axios.put(url+`/${id}`,filaSeleccionada)
   .then(response=>{
-    var dataNueva= data;
+    console.log(descEstatus);
+    console.log(response.data);  
 
-    dataNueva.map(item=>{
-      if(item.id===id){
-          item.estatus=filaSeleccionada.estatus;
-          item.descEstatus=filaSeleccionada.filaSeleccionada;
-          item.comentarios=filaSeleccionada.comentarios;
-      }
-    });
-    setData(dataNueva);
-    
     if(sinEnviar.length>0){
+    console.log(sinEnviar);
+    
     const arrayEditado = sinEnviar.map(item => (
       item.id === id ? 
       {
@@ -278,9 +274,9 @@ const Financiamiento=(props)=>{
       productor:item.productor,
       idAgen:item.idAgen,
       asesor:item.asesor,
-      estatus:filaSeleccionada.estatus,
-      descEstatus:filaSeleccionada.descEstatus,
-      comentarios:filaSeleccionada.comentarios,
+      estatus:response.estatus,
+      descEstatus:descEstatus,
+      comentarios:response.data.comentarios,
       saldoFinal:item.saldoFinal,
       caja1:item.caja1,
       caja2:item.caja2,
@@ -288,6 +284,7 @@ const Financiamiento=(props)=>{
     ))
     setSinEnviar(arrayEditado);
     }
+
     const arrayEditado2 = enviados.map(item => (
       item.id === id ? 
       {
@@ -295,7 +292,7 @@ const Financiamiento=(props)=>{
       cod_Prod:item.cod_Prod,
       productor:item.productor,
       asesor:item.asesor,
-      descEstatus:estatus!==null? estatus: item.descEstatus,
+      descEstatus:descEstatus!==null? descEstatus: item.descEstatus,
       comentarios:filaSeleccionada.comentarios,
       saldoFinal:item.saldoFinal,
       caja1:item.caja1,
@@ -304,7 +301,6 @@ const Financiamiento=(props)=>{
     ))
     setEnviados(arrayEditado2);
 
-    console.log(sinEnviar);
     setmodoEdicion(false);   
     setModalEditar(false); 
 
@@ -318,7 +314,7 @@ const Financiamiento=(props)=>{
       console.log(error.response);
       console.log(error.request);
       console.log(error.message);
-}) 
+  }) 
   }
 
    //cargar info
@@ -347,20 +343,17 @@ const Financiamiento=(props)=>{
     .then(response=>{        
       
       try {
-        const nuevo = {
-          cod_prod: nuevoRegistro.cod_Prod,
-          productor: nom_p,
-          asesor: asesor
-        }
-        
         setSinEnviar([
           ...sinEnviar,
-          {...nuevo, 
+          {
             id:response.data.id,
             cod_Prod: response.data.cod_Prod,
             productor: nom_p,
             idAgen: nuevoRegistro.idAgen,
-            asesor: asesor
+            asesor: asesor,
+            estatus: "",
+            descEstatus:"",
+            comentarios: "",
           }
         ])       
         
@@ -387,7 +380,8 @@ const Financiamiento=(props)=>{
     e.preventDefault();    
     setLoading(true);  
     recipient="Enviar a ingenieros";
-    setTimeout(enviarEmail, 3000);         
+    enviarEmail();
+   /*  setTimeout(enviarEmail, 3000);          */
   }
 
    //Enviar a atención a productores 
@@ -398,53 +392,47 @@ const Financiamiento=(props)=>{
     setTimeout(enviarEmail, 3000);         
   }
 
-   //Enviar a atención a productores 
+   //Guardar sin enviar correo
   const enviarSinCorreo=e=>{ 
     e.preventDefault();    
     setLoadingS(true);  
     recipient="Enviar sin correo";
-    setTimeout(enviarEmail, 3000);         
+    enviarEmail();         
   }
 
   const enviarEmail=async()=>{  
   await axios.patch(url+`/${recipient}`,sinEnviar)
     .then(response=>{  
-   
     try {
-      swal("Datos enviados correctamente!")
-      .then((value) => {
-        if(value===true){
-        const arrFiltrado=sinEnviar.filter(item=> item.id!==sinEnviar.id)
-        setSinEnviar(arrFiltrado);
-        
-          const nuevo = {
-            id: sinEnviar.id,
-            cod_Prod: sinEnviar.cod_Prod,
-            productor: sinEnviar.productor,
-            asesor: sinEnviar.asesor,
-            estatus: sinEnviar.estatus,
-            comentarios: sinEnviar.comentarios,
-            saldoFinal: sinEnviar.SaldoFinal,
-            caja1: sinEnviar.caja1,
-            caja2: sinEnviar.caja2
-          }
-          
-          setEnviados([
-            ...enviados,
-            {...nuevo, 
-              id:response.data.id,
-              cod_Prod: response.data.cod_Prod,
-              productor: response.data.productor,
-              idAgen: response.data.idAgen,
-              asesor: response.data.asesor,
-              estatus: sinEnviar.estatus,
-              comentarios: sinEnviar.comentarios,
-              saldoFinal: response.data.SaldoFinal,
-              caja1: response.data.caja1,
-              caja2: response.data.caja2
-            }
-          ])   
+      swal("Datos guardados correctamente!")
+      .then((value) => 
+      {
+        if(value===true)
+        {
+          for (let i = 0; i < response.data.length; i++) 
+          {
+            console.log( response.data[i].id);
+            const arrFiltrado=sinEnviar.filter(item=> item.id!==response.data[i].id)
+            setSinEnviar(arrFiltrado);
 
+            setEnviados([
+              ...enviados,
+              { 
+                id:response.data[i].id,
+                cod_Prod: response.data[i].cod_Prod,
+                productor: response.data[i].productor,
+                idAgen: response.data[i].idAgen,
+                asesor: response.data[i].asesor,
+                estatus: response.data[i].estatus,
+                descEstatus:response.data[i].descEstatus,
+                comentarios: response.data[i].comentarios,
+                saldoFinal: response.data[i].SaldoFinal,
+                caja1: response.data[i].caja1,
+                caja2: response.data[i].caja2
+              }
+            ])
+
+          }
         }  
       });
       } catch (error) {
@@ -507,6 +495,14 @@ const Financiamiento=(props)=>{
     setModalEditar(!modalEditar);
   }
   
+  //cargar info
+  const handlerCargarEstatus= function(e){
+    axios.get(url)
+    .then(res=>{ 
+      setEstatusList(res.data);         
+     })
+  }
+
   const bodyEditar=(
     <div className={styles.modal}>
       <h6>Editar Estatus</h6>
@@ -519,44 +515,15 @@ const Financiamiento=(props)=>{
         />          
       <br />
       Estatus:
-    {/*   <input 
-          type="text" disabled
-          className="form-control"
-          name="estatus"
-          value={filaSeleccionada&&filaSeleccionada.estatus}
-        />   */}   
-      <select className="form-control" id="estatus" name="estatus"
-                 onChange={handleChange}  
-                 >
-                <option value={0}> --Seleccione una opción-- </option>
-                <option value={'A'}>
-                ATENCIÓN A PRODUCTORES
-                </option>
-                <option value={'M'}>
-                CIERRE DE MATERIAL
-                </option>
-                <option value={'C'}>
-                COBRANZA
-                </option>
-                <option value={'R'}>
-                PENDIENTE REVISIÓN
-                </option>
-                <option value={'G'}>
-                REVISA GERENCIA
-                </option>
-                <option value={'S'}>
-                SALDADO
-                </option>
-                <option value={'T'}>
-                TERMINO TEMPORADA
-                </option>
-                <option value={'E'}>
-                VA A ENTREGAR
-                </option>
-                <option value={'P'}>
-                VA A PAGAR
-                </option>
-                </select> 
+        <select name="estatus" className="form-control" 
+        onChange={handleChange} onClick={handlerCargarEstatus}>
+          <option value={0} >Seleccione</option>
+          {
+            estatusList.map(item=>(
+            <option key={item.id} value={item.id} >{item.descEstatus}</option>
+          )
+          )}
+        </select>  
       <br />
       Comentarios
       <textarea 
@@ -668,105 +635,36 @@ return(
             <td>{item.cod_Prod}</td>
             <td>{item.productor}</td>
             <td>{item.asesor}</td>
+
             {id === item.id && modoEdicion ? (
                <>
                 <td>
-                <select className="form-control" id="estatus" name="estatus"
-                 onChange={handleChange}  
-                 >
-                <option value={0}> --Seleccione una opción-- </option>
-                <option value={'A'}>
-                ATENCIÓN A PRODUCTORES
-                </option>
-                <option value={'M'}>
-                CIERRE DE MATERIAL
-                </option>
-                <option value={'C'}>
-                MANDAR COBRANZA
-                </option>
-                <option value={'R'}>
-                SE VA A REVISAR 
-                </option>
-                <option value={'G'}>
-                REVISA GERENCIA
-                </option>
-                <option value={'S'}>
-                SALDADO
-                </option>
-                <option value={'T'}>
-                TERMINO TEMPORADA
-                </option>
-                <option value={'E'}>
-                VA A ENTREGAR
-                </option>
-                <option value={'P'}>
-                VA A PAGAR
-                </option>
-                </select> 
+                <select name="estatus" className="form-control" 
+                onChange={handleChange} onClick={handlerCargarEstatus}>
+                <option value={0} >Seleccione</option>
+                {
+                 estatusList.map(item=>(
+                 <option key={item.id} value={item.id} >{item.descEstatus}</option>
+                )
+                )}
+                </select>  
                 </td>                
                 <td>
                  <input type="text" className="form-control"
-                name="comentarios"  
-                /* value={item.comentarios}  */
-                onChange={handleChange} />     
-                {/*   <TextField type="text" style={{fontSize: 11}} className="mb-2" name="comentarios"                   
-                  value={item.comentarios} 
-                  onChange={handleChange}  /> */}
+                name="comentarios"   
+                onChange={handleChange} />      
                 </td>
                </>
                ):(
                <>
                <td>
-                 {item.estatus === 'A' ?
-                 <p> ATENCIÓN A PRODUCTORES </p>
-                 :
-                 false
-                 }
-                 {item.estatus === 'M' ?
-                 <p> CIERRE DE MATERIAL </p>
-                 :
-                 false
-                 }
-                 {item.estatus === 'C' ?
-                 <p> COBRANZA </p>
-                 :
-                 false
-                 }
-                  {item.estatus === 'R' ?
-                 <p> PENDIENTE REVISIÓN </p>
-                 :
-                 false
-                 }
-                  {item.estatus === 'G' ?
-                 <p> REVISA GERENCIA </p>
-                 :
-                 false
-                 }
-                  {item.estatus === 'S' ?
-                 <p> SALDADO </p>
-                 :
-                 false
-                 }
-                  {item.estatus === 'T' ?
-                 <p> TERMINO TEMPORADA </p>
-                 :
-                 false
-                 }
-                  {item.estatus === 'E' ?
-                 <p> VA A ENTREGAR </p>
-                 :
-                 false
-                 }
-                  {item.estatus === 'P' ?
-                 <p> VA A PAGAR </p>
-                 :
-                 false
-                 }
+                 {item.descEstatus}              
                </td>
                <td>{item.comentarios}</td>
                </>
                )
-            }            
+            } 
+
             <td>{item.saldoFinal}</td>
             <td>{item.caja1}</td>
             <td>{item.caja2}</td>
@@ -805,7 +703,7 @@ return(
    <Button className="btn btn-danger btn-sm active float-right m-4" type="submit" endIcon={<EmailTwoToneIcon />}> {loadingAP ? "Enviando..." : "Ademir"} </Button>
    </form>
    <form onSubmit={enviarSinCorreo}>    
-   <Button className="btn btn-success btn-sm active float-right m-4" type="submit" endIcon={<SaveTwoToneIcon />}> {loadingS ? "Enviando..." : "Guardar"} </Button>
+   <Button className="btn btn-success btn-sm active float-right m-4" type="submit" endIcon={<SaveTwoToneIcon />}> {loadingS ? "Guardando..." : "Guardar"} </Button>
    </form>
    </div>
   </div>    

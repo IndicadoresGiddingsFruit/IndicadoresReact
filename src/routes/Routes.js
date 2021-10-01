@@ -5,25 +5,27 @@ import App from '../pages/App.jsx';
 import Registro from '../pages/Registro.jsx';
  
 /* muestreos */
-import Nuevo from '../pages/muestreos/Nuevo.jsx';
-import Muestreos from '../pages/muestreos/Muestreos.jsx';
-import Evaluacion from '../pages/muestreos/Evaluacion.jsx';
+import Nuevo from '../pages/Muestreos/Nuevo.jsx';
+import Muestreos from '../pages/Muestreos/Muestreos.jsx';
+import Evaluacion from '../pages/Muestreos/Evaluacion.jsx';
 
 /* analisis */
 import Analisis from '../pages/Analisis/Analisis.jsx';
 import Resultados from '../pages/Analisis/Resultados.jsx';
 
 /* indicadores */
-import Visitas from '../pages/indicadores/Visitas.jsx';
-import ReporteVisitas from '../pages/indicadores/ReporteVisitas.jsx'
-import Financiamiento from '../pages/indicadores/Financiamiento.jsx';
+import Visitas from '../pages/Indicadores/Visitas.jsx';
+import ReporteVisitas from '../pages/Indicadores/ReporteVisitas.jsx'
+import Financiamiento from '../pages/Indicadores/Financiamiento.jsx';
 
 /* encuestas */
 import Encuestas from '../pages/Encuestas/Encuestas.jsx'
 import Editar from '../pages/Encuestas/Editar.jsx'
 import Responder from '../pages/Encuestas/Responder.jsx'
 import Respuestas from '../pages/Encuestas/Respuestas.jsx'
-import RespuestasTotal from '../pages/Encuestas/RespuestasTotal.jsx'
+import RespuestasTotal from '../pages/Encuestas/RespuestasTotal.jsx' 
+import LiberarAnalisis from '../pages/Analisis/LiberarAnalisis.jsx';
+import Bloqueo from '../pages/Muestreos/Bloqueo.jsx';
 
 function Routes() {
  const rutaServer="/Indicadores"; 
@@ -36,6 +38,9 @@ function Routes() {
          </Route>
           <Route exact path="/nuevo">
            <Nuevo />
+         </Route>
+         <Route exact path="/bloqueo">
+           <Bloqueo />
          </Route>
          <Route exact path="/muestreos">
            <Muestreos />
@@ -51,6 +56,9 @@ function Routes() {
          </Route>
          <Route exact path="/analisis">
            <Analisis />
+         </Route>
+         <Route exact path="/liberar">
+           <LiberarAnalisis />
          </Route>
          <Route exact path="/resultados">
            <Resultados />

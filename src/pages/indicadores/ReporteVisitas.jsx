@@ -115,7 +115,9 @@ const ReporteVisitas = (props) => {
 
  const abrirImg=async(item)=>{
     await axios.get(url_img+`/${item.idVisita}`)
-    .then(response=>{        
+    .then(response=>{   
+      console.log(response.data);
+           
       setRutaImg(response.data);  
       setIncidencias(item.descIncidencia);
       openClose_Modal();
@@ -134,7 +136,7 @@ const ReporteVisitas = (props) => {
  }
 
  useEffect(()=>{
-  if(cookies.get('IdAgen')==='1')
+  if(cookies.get('IdAgen')==='1' || cookies.get('IdAgen')==='5')
   {
     setAdmin(true);
   }

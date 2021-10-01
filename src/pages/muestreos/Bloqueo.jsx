@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import Contenedor from '../Contenedor.jsx';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
-import {Checkbox,FormControlLabel,Grid} from '@material-ui/core';
+import {Grid} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import swal from 'sweetalert';
 
@@ -45,80 +45,57 @@ ocultar:{
 }
 }));
 
-const Index=()=>{  
+const Bloqueo=()=>{  
   const styles=useStyles();
   const url="https://giddingsfruit.mx/ApiIndicadores/api/muestreo";
   //const url="https://localhost:44344/api/muestreo";
   const cookies = new Cookies(); 
   const [data, setData]= useState([]);
-  const [campos, setCampos] = useState([]);
-  const [nom_p, setNom_p] = useState(null);
-  const [c_campo, setC_campo] = useState(null);
-  const [campo, setCampo] = useState(null);
-  const [localidad, setLocalidad] = useState(null);
-  const [ubicacion, setUbicacion] = useState(null);
-  const [tipo, setTipo] = useState(null);
-  const [producto, setProducto] = useState(null);
-  const [compras_op, setCompras_op] = useState(false); 
+  const [campos, setcampos] = useState([]);
+  const [nom_p, setnom_p] = useState(null);
+  const [c_campo, setc_campo] = useState(null);
+  const [campo, setcampo] = useState(null);
+  const [loc, setloc] = useState(null);
+  const [tipo, settipo] = useState(null);
+  const [producto, setproducto] = useState(null);
   const [loading,setLoading]=useState(false); 
   var opcion_campo;
- 
-  const [nuevomuestreo,setnuevomuestreo]=useState({
-    idAgen:parseInt(cookies.get('IdAgen')),      
-    cod_Empresa:parseInt(2),
+  var idMuestreo;
+
+  const [nuevo,setnuevo]=useState({  
     cod_Prod: "",
-    cod_Campo: parseInt(),
-    telefono: "",
-    inicio_cosecha:"" ,
-    cajasEstimadas: ""
+    cod_Campo: parseInt(),  
+    liberar_Tarjeta:""  
   })
 
   const handleChange=e=>{       
     const {name, value}=e.target;    
-    setnuevomuestreo(prevState=>({
+    setnuevo(prevState=>({
       ...prevState,
       [name]: value
     }));
-   /*  console.log(name,value);
-   console.log(nuevomuestreo); */
   }
 
   const enviarSolicitud = async (e) => {
    e.preventDefault();
-
-    if(!nuevomuestreo.cod_Prod.trim() || !nuevomuestreo.telefono.trim() || !nuevomuestreo.inicio_cosecha.trim()  || !nuevomuestreo.cajasEstimadas.trim()){     
+   setLoading(true);  
       swal({
-        title: "¡Complete todos los campos!",
-        icon: "error",
-        button: "Cerrar",
-      });
-       return
-    }
-   else{     
-      swal({
-        title: "¿Está seguro de enviar esta solicitud?",
+        title: "¿Está seguro de guardar esta información?",
         icon: "info",
         buttons: ["No","Si"],
       }).then((value) => {
         if(value){
-        peticionPost();
+          buscarSolicitud();
         }
-      }); 
-    }    
+      });
+      setLoading(false);  
   }
 
-  const peticionPost=async()=>{
-    setLoading(true);   
-    await axios.post(url,nuevomuestreo)
-    .then(response=>{
-      setData(data.concat(response.data));
-      swal({
-        title: "Solicitud enviada correctamente!",
-        icon: "success",
-        button: "ok",
-      });
-    /*   nuevomuestreo.trim(); */
-      
+  const buscarSolicitud=async(e)=>{   
+    await axios.get(url+`/${cookies.get('IdAgen')}/${null}/${cookies.get('Depto')}/${nuevo.cod_Prod}/${nuevo.cod_Campo}`)
+    .then(res=>{   
+      idMuestreo=res.data.id;  
+      peticionPatch();
     }).catch(error=>{
       swal({
         title: error.response.data,
@@ -130,14 +107,36 @@ const Index=()=>{
       console.log(error.request);
       console.log(error.message); 
     })
-    setLoading(false);   
+setLoading(false);   
+}
+ 
+  const peticionPatch=async(e)=>{ 
+        await axios.patch(url+`/${idMuestreo}/${cookies.get('IdAgen')}/${"bloqueo"}`,nuevo)
+        .then(response=>{ 
+          swal({
+            title: "Datos enviados correctamente!",
+            icon: "success",
+            button: "ok",
+          });
+
+        }).catch(error=>{
+          swal({
+            title: error.response.data,
+            text: "Favor de verificar la información",
+            icon: "error",
+            button: "Cerrar",
+          });
+          console.log(error.response.data);
+          console.log(error.request);
+          console.log(error.message); 
+        })
   }
 
-  //cargar info
+  //cargar campos
   const handlerCargarCampos= function(e){
-    axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${nuevomuestreo.cod_Prod}/${0}`)
+    axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${nuevo.cod_Prod}/${0}`)
     .then(res=>{ 
-      setCampos(res.data);         
+      setcampos(res.data);         
       opcion_campo=e.target.value;
       handlerCargarinfo(opcion_campo);
      })
@@ -145,33 +144,26 @@ const Index=()=>{
 
   //info por campo
   const handlerCargarinfo= function(opcion_campo){     
-        axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${nuevomuestreo.cod_Prod}/${opcion_campo}`)
+        axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${nuevo.cod_Prod}/${opcion_campo}`)
         .then(res=>{   
         for(const dataObj of res.data)
         {        
-        setC_campo(dataObj.cod_Campo);
-        setCampo(dataObj.campo);
-        setUbicacion(dataObj.ubicacion);
-        setLocalidad(dataObj.localidad);
-        setTipo(dataObj.tipo);
-        setProducto(dataObj.producto);
-        if(dataObj.compras_oportunidad==="S"){
-          setCompras_op(true);
-        }
-        else{
-          setCompras_op(false);
-        }        
+        setc_campo(dataObj.cod_Campo);
+        setcampo(dataObj.campo);
+        setloc(dataObj.ubicacion);
+        settipo(dataObj.tipo);
+        setproducto(dataObj.producto);       
       }
     })   
   }
 
    //info por campo
   const handlerCargarNomProd= function(){     
-    axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${nuevomuestreo.cod_Prod}/${0}`)
+    axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${nuevo.cod_Prod}/${0}`)
     .then(res=>{   
     for(const dataObj of res.data)
     {
-    setNom_p(dataObj.productor);
+    setnom_p(dataObj.productor);
    }
  })   
 }
@@ -186,11 +178,12 @@ return(
     <div className="card card-default">
     <form onSubmit={enviarSolicitud}>
     <div className="card-header">     
-      <h7 className="font-weight-bold text-secondary">Solicitar muestreo</h7>      
+      <h7 className="font-weight-bold text-secondary">Bloqueo para no entregar tarjeta</h7>      
     </div>         
     <div className="card-body font-weight-bold text-secondary">
       <div className="row">
-          <div className="col-md-6">
+
+      <div className="col-md-12">
         <div className="form-group-sm">
         <Grid container spacing={3}>
         <Grid item xs={12} md={12} lg={6}>
@@ -205,13 +198,14 @@ return(
         Nombre:  
         <input 
           type="text" disabled
-          className="form-control" name="productor"
+          className="form-control"
+          id="productor" name="productor"
           value={nom_p}
         />                
         </Grid>
         <Grid item xs={12} md={12} lg={6}>
         Campo: 
-        <select name="cod_Campo" className="form-control" 
+        <select name="cod_Campo" id="cod_Campo" className="form-control" 
         onChange={handleChange} onClick={handlerCargarCampos}>
           <option value={0} >Seleccione un campo</option>
           {
@@ -225,7 +219,8 @@ return(
         Nombre:  
         <input 
           type="text" disabled
-          className="form-control" name="campo"
+          className="form-control"
+          id="campo" name="campo"
           value={campo}
         />         
         </Grid>
@@ -233,7 +228,8 @@ return(
         Cultivo:  
         <input 
           type="text" disabled
-          className="form-control" name="tipo"
+          className="form-control"
+          id="tipo" name="tipo"
           value={tipo}
         />          
         </Grid>
@@ -242,7 +238,8 @@ return(
         Producto:  
         <input 
           type="text" disabled
-          className="form-control" name="producto"
+          className="form-control"
+          id="producto" name="producto"
           value={producto}
         />       
         </Grid>
@@ -251,62 +248,26 @@ return(
       </div>
     </div>
 
-    <div className="col-md-6">
-      <div className="form-group-sm">
+    <div className="col-md-12">
+        <div className="form-group-sm">
         <Grid container spacing={3}>
-        <Grid item xs={12} md={12} lg={6}>
-        Localidad:   
-        <input 
-          type="text" disabled
-          className="form-control"
-          name="localidad"
-          value={localidad}
-        />              
-        </Grid>
-
         <Grid item xs={12} md={12} lg={6}>
         Ubicacion:   
         <input 
           type="text" disabled
           className="form-control"
-          name="ubicacion"
-          value={ubicacion}
+          id="productor" name="productor"
+          value={loc}
         />              
         </Grid>
         <Grid item xs={12} md={12} lg={6}>
-        Teléfono:
-            <input 
+        Justificación:
+            <textarea 
             type="text" required
-            className="form-control" name="telefono" maxLength={10} minLength={10} variant="outlined"
+            className="form-control" name="liberar_Tarjeta" variant="outlined"
             onChange={handleChange} autoComplete="off"
           />     
-        </Grid>
-        <Grid item xs={12} md={12} lg={6}>
-        Inicio de cosecha: 
-        <input 
-          type="date" required
-          className="form-control"
-          name="inicio_cosecha" variant="outlined"  
-          onChange={handleChange}
-        />       
-        </Grid>
-        
-        <Grid item xs={12} md={12} lg={6}>
-         Cajas estimadas:
-            <input 
-            type="text" required
-            className="form-control" name="cajasEstimadas" variant="outlined"
-            onChange={handleChange} autoComplete="off"
-          />     
-        </Grid>
-
-        <Grid item xs={12} md={12} lg={6}>
-        <br />
-        <FormControlLabel disabled control={
-        <Checkbox disabled name="compras_oportunidad" color="primary" checked={compras_op} />} label="Compras de oportunidad"
-        />  
-        </Grid>
-      
+        </Grid> 
       </Grid>
       </div>
     </div>
@@ -326,4 +287,4 @@ return(
 );
 }
 
-export default Index;
+export default Bloqueo;

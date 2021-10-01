@@ -86,7 +86,8 @@ return(
       <Typography variant="h6" className={styles.title}>
       {cookies.get('Completo')}
       </Typography>
-       
+     
+
       <div className="nav-item dropdown">
       <Button variant="text" color="inherit" className="nav-link" data-toggle="dropdown" endIcon={<ArrowDropDownIcon />}></Button>
         <div className="dropdown-menu dropdown-menu-right" style={{width: '10px'}}>         

@@ -226,6 +226,7 @@ import Contenedor from '../Contenedor.jsx';
             <h7 className="font-weight-bold text-secondary">Agregar nuevo análisis de Residuos de Plaguicidas</h7>      
           </div>         
           <div style={{fontSize: 12,}} className="card-body">
+            
           <div className="row">
 	      <div className="col-md-4">
         <div className="form-group-sm">

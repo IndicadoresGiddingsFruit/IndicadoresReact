@@ -195,7 +195,7 @@ const Encuestas =(props)=>{
   getEncuestas();
   setLoading(false);
  
-    swal({
+  swal({
     title: "Datos guardados correctamente",   
     icon: "success",
     button: "ok",

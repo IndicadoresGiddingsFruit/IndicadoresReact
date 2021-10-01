@@ -32,12 +32,18 @@
 
     const Editar=(props)=>{  
       const styles=useStyles();
-      //const url="https://giddingsfruit.mx/ApiIndicadores/api/encuestas";
-      const url="https://localhost:44344/api/encuestas"
+      const url="https://giddingsfruit.mx/ApiIndicadores/api/encuestas";
+
+      //const url="https://localhost:44344/api/encuestas"
+      
       const url_usuarios="https://giddingsfruit.mx/ApiIndicadores/api/usuarios";
+
       const url_det="https://localhost:44344/api/encuestasdet";
+
       const url_res="https://localhost:44344/api/encuestasres";
+
       const url_us="https://giddingsfruit.mx/ApiIndicadores/api/encuestasusuarios";
+
       const cookies = new Cookies();
       const {id}=useParams();  
       const [loadingP,setLoadingP]=useState(false); 

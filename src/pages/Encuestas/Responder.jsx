@@ -25,7 +25,9 @@ const Responder=(props)=>{
     const {id}=useParams();  
     var i;
     const url="https://giddingsfruit.mx/ApiIndicadores/api/encuestas";    
+    //const url="https://localhost:44344/api/encuestas";    
     const url_us="https://giddingsfruit.mx/ApiIndicadores/api/encuestasusuarios";
+    //const url_us="https://localhost:44344/api/encuestasusuarios";
     const [preguntas,setPreguntas]=useState([]);           
     const [data, setData]= useState([]);
     const [nombrEncuesta,setNombrencuesta]=useState('');    
@@ -60,38 +62,58 @@ const Responder=(props)=>{
         [name]: value
       }));    */
 
-      const {name, value}=e.target;    
+     /*  const {name, value}=e.target;    
       setRespuesta(prevState=>({
         ...prevState,
         idPregunta:parseInt(name),
         idRespuesta:value
         //[name]: value
       }));   
+    */
+
+      const {name, value}=e.target;    
+      setRespuesta(prevState=>({
+        ...prevState,
+        idPregunta:parseInt(name),
+        idRelacion:parseInt(value),
+        respuesta:value
+      }));   
 
       console.log(respuesta);
     } 
 
     const guardar=e=>{
-      e.preventDefault()
-
-      /*  for (i in respuesta) {  
-        if(respuesta[i]){ 
-        let data = { idPregunta: parseInt(i), id: parseInt(respuesta[i]) };
+      e.preventDefault();
+      
+      for (i in respuesta) 
+      {  
+        if(respuesta[i])
+        { 
+        let data = 
+        { 
+          idPregunta: parseInt(i), 
+          id: parseInt(respuesta[i]) 
+        };
         respuestas.push(data);  
         }      
-      } */
+      }
 
-      for (i in respuesta) {  
-        if(respuesta[i]){ 
+    /*   for (i in respuesta) 
+      {  
+        if(respuesta[i])
+        { 
         let data = { 
+          idPregunta:parseInt(respuesta[i]), 
           idRelacion:parseInt(respuesta[i]), 
           respuesta:respuesta[i],
           idAsingUsuario:parseInt(cookies.get('Id')),
         };
         respuestas.push(data);  
         }      
-      }
+      } */
      
+      console.log(respuestas);
+
       if(respuestas.length===0){           
         swal({
          title: "¡No debe enviar la encuesta vacía!",
@@ -110,10 +132,8 @@ const Responder=(props)=>{
         });
         return setRespuestas([]);
       }
-     
-    console.log(respuestas);
-    //peticionPost(); 
-    setRespuestas([]);
+      //peticionPost(); 
+      setRespuestas([]);
     }
   
     const peticionPost=async()=>{
@@ -165,12 +185,15 @@ const Responder=(props)=>{
                 {subitem.idRespuesta===76 ?
                 (
                 <>
-                <textarea className="form-control mb-2" type="text" required name={subitem.idPregunta} autoComplete="off" onChange={handleChange}></textarea>               
+                  <input className="form-check-input" type="radio" name={subitem.idPregunta} defaultValue={subitem.idRelacion} 
+                  ></input>
+                  <textarea className="form-control mb-2" type="text" required name={subitem.idPregunta} autoComplete="off" 
+                  onChange={handleChange}></textarea>        
                 </>
                 ):(
                 <>
-                  <input className="form-check-input" type="radio" name={subitem.idPregunta} defaultValue={subitem.idRelacion} // 
-                  onChange={handleChange}></input>
+                  <input className="form-check-input" type="radio" name={subitem.idPregunta} defaultValue={subitem.idRelacion} 
+                    onChange={handleChange}></input>
                     <label className="form-check-label" htmlFor="exampleRadios1">
                         {subitem.respuesta}
                     </label>  
@@ -190,8 +213,7 @@ const Responder=(props)=>{
     </ol>
     <Button className="btn btn-primary btn-sm active float-right btn-block" endIcon={<SaveIcon />} type="submit">Guardar</Button> 
     </form>
-     
-     
+
     </section>
     </div>   
     </div>
