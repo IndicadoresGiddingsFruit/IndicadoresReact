@@ -21,7 +21,8 @@ const Respuestas=(props)=>{
     const cookies = new Cookies();
     const {id}=useParams();
     const {idUsuario}=useParams();      
-    const url="https://giddingsfruit.mx/ApiIndicadores/api/encuestas";   
+    const url="https://giddingsfruit.mx/ApiIndicadores/api/encuestasres";
+    //const url="https://localhost:44344/api/encuestasres";   
     const [respuestas, setRespuestas]=useState([]);
     const [nombrEncuesta,setNombrencuesta]=useState('');  
     const [nomUsuario,setNomUsuario]=useState('');
@@ -39,12 +40,12 @@ const Respuestas=(props)=>{
     const getDatos=async()=>{       
       await axios.get(url+"/"+id+"/"+idUsuario)
         .then(res=>{    
-            setRespuestas(res.data.item3);
-
-            for(const dataObj of res.data.item3)
+            setRespuestas(res.data);
+            for(const dataObj of res.data)
             {
               setNombrencuesta(dataObj.encuesta);
-              if(cookies.get('Tipo')==='R'){
+              if(cookies.get('Id')==='352')
+              {
                 setNomUsuario(dataObj.usuario);
               }              
             }    
@@ -67,17 +68,19 @@ const Respuestas=(props)=>{
       <hr/>
       <div className="row">
       <div className="col-12">     
-      <ul>
+      <ol>
       {
       respuestas.map(item=>(
         <React.Fragment key={item.idPregunta}>    
         <li>{item.pregunta} 
           <br />{item.respuesta}
+          <br />{item.respuestaLibre}
         </li> 
+        <br />
         </React.Fragment>
       ))
       }
-      </ul>
+      </ol>
       </div>
       </div>
       </React.Fragment>    

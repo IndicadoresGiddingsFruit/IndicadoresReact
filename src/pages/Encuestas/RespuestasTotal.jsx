@@ -98,7 +98,6 @@ const useStyles=makeStyles(theme=>({
     },    
 }))
  
-
 const RespuestasTotal=(props)=>{  
   const styles=useStyles(); 
     const {id}=useParams();     

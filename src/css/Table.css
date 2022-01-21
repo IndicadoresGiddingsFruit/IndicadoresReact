@@ -1,0 +1,213 @@
+table td:first-child {
+    width: 80px;
+  }
+  table td:nth-child(2) {
+    width: 100px;
+  }
+
+  table td:nth-child(3) {
+    width: 100px;
+  }
+
+  table td:nth-child(4) {
+    width: 250px;
+  }
+
+  table td:nth-child(5) {
+    width: 3px;
+  }
+
+  table td:nth-child(6) {
+    width: 100px;
+  }
+
+  table td:nth-child(7) {
+    width: 100px;
+  }
+
+  table td:nth-child(8) {
+    width: 100px;
+  }
+
+  table td:nth-child(9) {
+    width: 100px;
+  } 
+
+  table td:nth-child(10) {
+    width: 100px;
+  } 
+
+  
+  /* Tablas Auditoria */
+  .table-auditoria td:first-child {
+    width: 10%;
+  }
+
+  .table-auditoria td:nth-child(2) {
+    width: 75%;
+  }
+
+  .table-auditoria td:nth-child(3) {
+    width: 5%;
+  }
+
+  .table-auditoria td:nth-child(4) {
+    width: 5%;
+  }
+
+
+
+  /* Tablas Auditorias Todas */
+  .table-auditorias td:first-child {
+    width: 10%;
+  }
+
+  .table-auditorias td:nth-child(2) {
+    width: 20%;
+  }
+
+  .table-auditorias td:nth-child(3) {
+    width: 5%;
+  }
+
+  .table-auditorias td:nth-child(4) {
+    width: 20%;
+  }
+
+  .table-auditorias td:nth-child(5) {
+    width: 5%;
+  }
+
+  .table-auditorias td:nth-child(6) {
+    width: 5%;
+  }
+
+  .table-auditorias td:nth-child(7) {
+    width: 12%;
+  }
+
+  .table-auditorias td:nth-child(8) {
+    width: 3%;
+  }
+
+  .table-auditorias td:nth-child(9) {
+    width: 10%;
+  }
+
+  .table-auditorias td:nth-child(10) {
+    width: 10%;
+  }
+
+  
+  /* Tablas Auditorias Todas */
+  .table-analisis td:first-child {
+    width: 80%;
+  }
+
+  .table-analisis td:nth-child(2) {
+    width: 20%;
+  }
+
+   /* Tablas Auditorias Campos */
+   .table-campos td:first-child {
+    width: 10%;
+  }
+  .table-campos td:nth-child(2) {
+    width: 10%;
+  }
+  .table-campos td:nth-child(3) {
+    width: 5%;
+  }
+  .table-campos td:nth-child(4) {
+    width: 5%;
+  }
+  .table-campos td:nth-child(5) {
+    width: 5%;
+  }
+  .table-campos td:nth-child(6) {
+    width: 10%;
+  }
+  .table-campos td:nth-child(7) {
+    width: 15%;
+  }
+  .table-campos td:nth-child(8) {
+    width: 5%;
+  }
+  .table-campos td:nth-child(9) {
+    width: 5%;
+  }
+  .table-campos td:nth-child(10) {
+    width: 5%;
+  }
+  .table-campos td:nth-child(11) {
+    width: 15%;
+  }
+  .table-campos td:nth-child(12) {
+    width: 5%;
+  }
+  .table-campos td:nth-child(13) {
+    width: 5%;
+  }
+
+
+   /* Tablas Liberar Analisis */
+   .table-libAnalisis td:first-child {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(2) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(3) {
+    width: 3%;
+  }
+  .table-libAnalisis td:nth-child(4) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(5) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(6) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(7) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(8) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(9) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(10) {
+    width: 1%;
+  }
+  .table-libAnalisis td:nth-child(11) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(12) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(13) {
+    width: 2%;
+  }
+  .table-libAnalisis td:nth-child(14) {
+    width: 5%;
+  }
+  .table-libAnalisis td:nth-child(15) {
+    width: 5%;
+  }
+  .table-libAnalisis td:nth-child(16) {
+    width: 1%;
+  }
+  .table-libAnalisis td:nth-child(17) {
+    width: 1%;
+  }
+  .table-libAnalisis td:nth-child(18) {
+    width: 5%;
+  }
+  .table-libAnalisis td:nth-child(19) {
+    width: 5%;
+  }
+  .table-libAnalisis td:nth-child(20) {
+    width: 5%;
+  }

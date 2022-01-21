@@ -47,25 +47,21 @@ ocultar:{
 
 const Bloqueo=()=>{  
   const styles=useStyles();
-  const url="https://giddingsfruit.mx/ApiIndicadores/api/muestreo";
-  //const url="https://localhost:44344/api/muestreo";
+  const url="https://giddingsfruit.mx/ApiIndicadores/api/bloqueotarjeta";
+  //const url="https://localhost:44344/api/bloqueotarjeta";
+  const url_campos = "https://giddingsfruit.mx/ApiIndicadores/api/campos";
+  //const url_campos="https://localhost:44344/api/campos";
+
   const cookies = new Cookies(); 
-  const [data, setData]= useState([]);
   const [campos, setcampos] = useState([]);
   const [nom_p, setnom_p] = useState(null);
-  const [c_campo, setc_campo] = useState(null);
-  const [campo, setcampo] = useState(null);
-  const [loc, setloc] = useState(null);
-  const [tipo, settipo] = useState(null);
-  const [producto, setproducto] = useState(null);
   const [loading,setLoading]=useState(false); 
-  var opcion_campo;
-  var idMuestreo;
 
   const [nuevo,setnuevo]=useState({  
     cod_Prod: "",
     cod_Campo: parseInt(),  
-    liberar_Tarjeta:""  
+    idAgen:parseInt(cookies.get('IdAgen')),
+    justificacion:"",      
   })
 
   const handleChange=e=>{       
@@ -85,17 +81,20 @@ const Bloqueo=()=>{
         buttons: ["No","Si"],
       }).then((value) => {
         if(value){
-          buscarSolicitud();
+          enviar();
         }
       });
       setLoading(false);  
   }
 
-  const buscarSolicitud=async(e)=>{   
-    await axios.get(url+`/${cookies.get('IdAgen')}/${null}/${cookies.get('Depto')}/${nuevo.cod_Prod}/${nuevo.cod_Campo}`)
+  const enviar=async(e)=>{   
+    await axios.post(url,nuevo)
     .then(res=>{   
-      idMuestreo=res.data.id;  
-      peticionPatch();
+      swal({
+        title: "Datos enviados correctamente!",
+        icon: "success",
+        button: "ok",
+      });
     }).catch(error=>{
       swal({
         title: error.response.data,
@@ -106,67 +105,19 @@ const Bloqueo=()=>{
       console.log(error.response.data);
       console.log(error.request);
       console.log(error.message); 
-    })
-setLoading(false);   
-}
- 
-  const peticionPatch=async(e)=>{ 
-        await axios.patch(url+`/${idMuestreo}/${cookies.get('IdAgen')}/${"bloqueo"}`,nuevo)
-        .then(response=>{ 
-          swal({
-            title: "Datos enviados correctamente!",
-            icon: "success",
-            button: "ok",
-          });
+    }) 
+  } 
 
-        }).catch(error=>{
-          swal({
-            title: error.response.data,
-            text: "Favor de verificar la información",
-            icon: "error",
-            button: "Cerrar",
-          });
-          console.log(error.response.data);
-          console.log(error.request);
-          console.log(error.message); 
-        })
-  }
-
-  //cargar campos
-  const handlerCargarCampos= function(e){
-    axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${nuevo.cod_Prod}/${0}`)
-    .then(res=>{ 
-      setcampos(res.data);         
-      opcion_campo=e.target.value;
-      handlerCargarinfo(opcion_campo);
-     })
-  }
-
-  //info por campo
-  const handlerCargarinfo= function(opcion_campo){     
-        axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${nuevo.cod_Prod}/${opcion_campo}`)
-        .then(res=>{   
-        for(const dataObj of res.data)
-        {        
-        setc_campo(dataObj.cod_Campo);
-        setcampo(dataObj.campo);
-        setloc(dataObj.ubicacion);
-        settipo(dataObj.tipo);
-        setproducto(dataObj.producto);       
-      }
-    })   
-  }
-
-   //info por campo
-  const handlerCargarNomProd= function(){     
-    axios.get("https://giddingsfruit.mx/ApiIndicadores/api/json"+`/${nuevo.cod_Prod}/${0}`)
+  const handlerCargarInfo= function(){     
+    axios.get(url_campos+`/${nuevo.cod_Prod}/${0}`)
     .then(res=>{   
     for(const dataObj of res.data)
     {
     setnom_p(dataObj.productor);
+    setcampos(res.data);     
    }
  })   
-}
+  }
 
 return(
 <div className={styles.root}>
@@ -178,18 +129,17 @@ return(
     <div className="card card-default">
     <form onSubmit={enviarSolicitud}>
     <div className="card-header">     
-      <h7 className="font-weight-bold text-secondary">Bloqueo para no entregar tarjeta</h7>      
+      <h5 className="font-weight-bold text-secondary">BLOQUEO PARA NO ENTREGAR TARJETA</h5>      
     </div>         
     <div className="card-body font-weight-bold text-secondary">
       <div className="row">
-
       <div className="col-md-12">
         <div className="form-group-sm">
         <Grid container spacing={3}>
         <Grid item xs={12} md={12} lg={6}>
         Codigo:   
         <input 
-          type="text" required onBlur={handlerCargarNomProd}
+          type="text" required onBlur={handlerCargarInfo}
           className="form-control" name="cod_Prod" maxLength={5} minLength={5} variant="outlined"
           onChange={handleChange} autoComplete="off"
         />       
@@ -202,69 +152,32 @@ return(
           id="productor" name="productor"
           value={nom_p}
         />                
-        </Grid>
-        <Grid item xs={12} md={12} lg={6}>
-        Campo: 
-        <select name="cod_Campo" id="cod_Campo" className="form-control" 
-        onChange={handleChange} onClick={handlerCargarCampos}>
-          <option value={0} >Seleccione un campo</option>
-          {
-            campos.map(item=>(
-            <option key={item.cod_Campo} value={item.cod_Campo} >{item.cod_Campo}</option>
-          )
-          )}
-        </select>     
-        </Grid>
-        <Grid item xs={12} md={12} lg={6}>
-        Nombre:  
-        <input 
-          type="text" disabled
-          className="form-control"
-          id="campo" name="campo"
-          value={campo}
-        />         
-        </Grid>
-        <Grid item xs={12} md={12} lg={6}>
-        Cultivo:  
-        <input 
-          type="text" disabled
-          className="form-control"
-          id="tipo" name="tipo"
-          value={tipo}
-        />          
-        </Grid>
-
-        <Grid item xs={12} md={12} lg={6}>
-        Producto:  
-        <input 
-          type="text" disabled
-          className="form-control"
-          id="producto" name="producto"
-          value={producto}
-        />       
-        </Grid>
- 
+        </Grid>  
       </Grid>
       </div>
     </div>
 
     <div className="col-md-12">
         <div className="form-group-sm">
-        <Grid container spacing={3}>
+        <Grid container spacing={3}>     
         <Grid item xs={12} md={12} lg={6}>
-        Ubicacion:   
-        <input 
-          type="text" disabled
-          className="form-control"
-          id="productor" name="productor"
-          value={loc}
-        />              
-        </Grid>
+        Campo: 
+        <select name="cod_Campo" id="cod_Campo" className="form-control" 
+        onChange={handleChange}>
+          <option value={0} >Seleccione un campo</option>
+          {
+            campos.map(item=>(
+            <option key={item.cod_Campo} value={item.cod_Campo} >{item.info}</option>
+          )
+          )}
+        </select>     
+        </Grid>          
+
         <Grid item xs={12} md={12} lg={6}>
         Justificación:
             <textarea 
             type="text" required
-            className="form-control" name="liberar_Tarjeta" variant="outlined"
+            className="form-control" name="justificacion" variant="outlined"
             onChange={handleChange} autoComplete="off"
           />     
         </Grid> 

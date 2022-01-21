@@ -1,0 +1,88 @@
+.table-totales td:first-child {
+    width: 100px;
+  }
+
+  .table-totales td:nth-child(2) {
+    width: 200px;
+  }
+
+  .table-totales td:nth-child(3) {
+    width: 300px;
+  }
+
+  .table-totales td:nth-child(4) {
+    width: 50px;
+  }
+
+  .table-totales td:nth-child(5) {
+    width: 50px;
+  }
+
+  .table-totales td:nth-child(6) {
+    width: 50px;
+  }
+
+  .table-totales td:nth-child(7) {
+    width: 50px;
+  }
+
+  .table-totales td:nth-child(8) {
+    width: 50px;
+  }
+
+  .table-totales td:nth-child(9) {
+    width: 100px;
+  } 
+
+  .table-totales td:nth-child(10) {
+    width: 100px;
+  } 
+  
+  .table-totales td:nth-child(10) {
+    width: 100px;
+  } 
+  
+  /* mes */
+  .table-mes td:first-child {
+    width: 200px;
+  }
+
+  .table-mes td:nth-child(2) {
+    width: 200px;
+  }
+
+  .table-mes td:nth-child(3) {
+    width: 350px;
+  }
+
+  .table-mes td:nth-child(4) {
+    width: 350px;
+  }
+
+  .table-mes td:nth-child(5) {
+    width: 50px;
+  }
+
+  .table-mes td:nth-child(6) {
+    width: 50px;
+  }
+
+  .table-mes td:nth-child(7) {
+    width: 50px;
+  }
+
+  .table-mes td:nth-child(8) {
+    width: 50px;
+  }
+
+  .table-mes td:nth-child(9) {
+    width: 50px;
+  } 
+
+  .table-mes td:nth-child(10) {
+    width: 100px;
+  } 
+
+  .table-mes td:nth-child(11) {
+    width: 100px;
+  } 

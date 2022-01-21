@@ -28,3 +28,56 @@ code {
   transform: scale(2);
 }
   
+.sidebar{
+  background-color: #3f51b5;
+  color:'white'
+}
+
+.logo{
+  width: '60px';
+  height: '40px';
+}
+
+.eficiencia::before{
+  content: "Eficiencia"; 
+  color:black; 
+  opacity: 0.8;
+}
+
+.eficiencia:hover::before{
+  content: "";  
+}
+
+.eficiencia:hover::after{
+  content: "Dias con visitas/Total dias laborales"; 
+  color:blue;
+  font-size: small;
+}
+
+.efectividad::before{
+  content: "Efectividad";  
+  color:black; 
+  opacity: 0.8;
+}
+
+.efectividad:hover::before{
+  content: "";  
+}
+
+.efectividad:hover::after{
+  content: "Visitas del mes/Total campos"; 
+  color:blue;
+  font-size: small;
+}
+
+ .logoGlobalGap{
+   width: 15%;
+ }
+
+ .textos{
+  text-align: justify;
+ }
+ 
+ .font-tabla{
+   font-size: 10px !important
+  }

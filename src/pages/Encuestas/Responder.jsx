@@ -23,29 +23,39 @@ const Responder=(props)=>{
   const styles=useStyles(); 
     const cookies = new Cookies();
     const {id}=useParams();  
-    var i;
+    var respuestas = [];
+
     const url="https://giddingsfruit.mx/ApiIndicadores/api/encuestas";    
     //const url="https://localhost:44344/api/encuestas";    
+    
     const url_us="https://giddingsfruit.mx/ApiIndicadores/api/encuestasusuarios";
     //const url_us="https://localhost:44344/api/encuestasusuarios";
+    
     const [preguntas,setPreguntas]=useState([]);           
     const [data, setData]= useState([]);
     const [nombrEncuesta,setNombrencuesta]=useState('');    
-    const [respuesta,setRespuesta]=useState({
-      /* idPregunta:parseInt(),
-      idRelacion:parseInt() */
-    });
-    const [respuestas, setRespuestas]=useState([]);
-    
+    const [descEncuesta,setDescEncuesta]=useState('');    
+    const [loading, setLoading] = useState(false);
+
+
+    var [arrayPreguntas, setarrayPreguntas] = useState([]);
+    const [respuestaIdRelacion, setRespuestaIdRelacion] = useState([]);
+    var [arrayIdRelacion, setArrayIdRelacion] = useState([]);
+  
+    var [arrayPreguntasLibre, setarrayPreguntasLibre] = useState([]);
+    const [respuestaL, setRespuestaL] = useState([]);
+    var [arrayRespuestaLibre, setArrayRespuestaLibre] = useState([]);
+
     useEffect(() => {
       const getDatos=async()=>{
         try { 
         await axios.get(url+"/"+id+"/"+cookies.get('Id'))
         .then(res=>{    
           setPreguntas(res.data.item1);           
-          for(const dataObj of res.data.item1)
+          for(const x of res.data.item1)
           {
-            setNombrencuesta(dataObj.encuesta); 
+            setNombrencuesta(x.encuesta); 
+            setDescEncuesta(x.descripcion)
           }           
         })  
       } catch (error) {
@@ -55,64 +65,95 @@ const Responder=(props)=>{
       getDatos()
     }, [id,cookies])   
 
-    const handleChange=e=>{ 
-     /*  const {name, value}=e.target;    
-      setRespuesta(prevState=>({
+    const handleChangeL = (e) => {
+      const { name, value } = e.target;
+  
+      setRespuestaL((prevState) => ({
         ...prevState,
-        [name]: value
-      }));    */
+        respuestaLibre: value,
+        idPregunta: respuestaIdRelacion.idPregunta
+      }));
+    };
 
-     /*  const {name, value}=e.target;    
-      setRespuesta(prevState=>({
+    const onblurRespuesta = function () {
+      /* setRespuestaLibre((prevState) => ({
         ...prevState,
-        idPregunta:parseInt(name),
-        idRespuesta:value
-        //[name]: value
-      }));   
-    */
+        respuestaLibre: respuestaLibre,
+        idPregunta: respuestaIdRelacion.idPregunta
+      })); */
+  
+      // console.log(arrayRespuestaLibre);
 
-      const {name, value}=e.target;    
-      setRespuesta(prevState=>({
+
+/* 
+      let newsAnswer = arrayPreguntasLibre.filter(
+        (p) => p.idPregunta !== arrayPreguntasLibre.idPregunta
+      );
+      newsAnswer.push(respuestaL);
+      setarrayPreguntasLibre(newsAnswer);
+      console.log(arrayPreguntasLibre); */
+
+      for (var i = 0; i < arrayPreguntasLibre.length; i++) {
+        if (
+          arrayPreguntasLibre[i].idPregunta === arrayPreguntasLibre.idPregunta
+        ) {
+          arrayPreguntasLibre.splice(i, 1);
+        }
+      }
+  
+      arrayPreguntasLibre.push(respuestaL);
+    };
+
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+  
+      setRespuestaIdRelacion((prevState) => ({
         ...prevState,
-        idPregunta:parseInt(name),
-        idRelacion:parseInt(value),
-        respuesta:value
-      }));   
-
-      console.log(respuesta);
-    } 
+        idRelacion: parseInt(value),
+        idPregunta: parseInt(name)
+      }));
+    };
+  
+    const onblurIdRelacion = function (e) {
+      for (var i = 0; i < arrayPreguntas.length; i++) {
+        if (arrayPreguntas[i].idPregunta === respuestaIdRelacion.idPregunta) {
+          arrayPreguntas.splice(i, 1);
+        }
+      }
+  
+      arrayPreguntas.push(respuestaIdRelacion);
+  
+      //console.log(arrayPreguntas);
+    };
 
     const guardar=e=>{
-      e.preventDefault();
+    e.preventDefault();
       
-      for (i in respuesta) 
-      {  
-        if(respuesta[i])
-        { 
-        let data = 
-        { 
-          idPregunta: parseInt(i), 
-          id: parseInt(respuesta[i]) 
-        };
-        respuestas.push(data);  
-        }      
-      }
+    for (var i = 0; i < arrayPreguntas.length; i++) {
+      arrayIdRelacion.push(arrayPreguntas[i].idRelacion);
+      //console.log(arrayIdRelacion);
+    }
 
-    /*   for (i in respuesta) 
-      {  
-        if(respuesta[i])
-        { 
-        let data = { 
-          idPregunta:parseInt(respuesta[i]), 
-          idRelacion:parseInt(respuesta[i]), 
-          respuesta:respuesta[i],
-          idAsingUsuario:parseInt(cookies.get('Id')),
-        };
-        respuestas.push(data);  
-        }      
-      } */
-     
-      console.log(respuestas);
+    for (var k = 0; k < arrayPreguntasLibre.length; k++) {
+      arrayRespuestaLibre.push(arrayPreguntasLibre[k].respuestaLibre);
+      //console.log(arrayRespuestaLibre);
+    }
+
+    if (arrayIdRelacion.length === 0) {
+      return;
+    }
+
+    for (var j = 0; j < arrayIdRelacion.length; ++j) {
+      respuestas.push({
+        idRelacion: arrayIdRelacion[j],
+        respuestaLibre: arrayRespuestaLibre[j]
+      });
+    }
+
+   /*  console.log(respuestas);  
+   
+    console.log(preguntas.length);
+    console.log(respuestas.length); */
 
       if(respuestas.length===0){           
         swal({
@@ -123,21 +164,24 @@ const Responder=(props)=>{
        });
         return
       }
-      else if(preguntas.length>respuestas.length){
+      else if(preguntas.length > respuestas.length){       
         swal({
           title: "¡Faltan preguntas por responder!",
           text: "Favor de completar el cuestionario",
           icon: "warning",
           button: "Cerrar",
         });
-        return setRespuestas([]);
+        return
       }
-      //peticionPost(); 
-      setRespuestas([]);
+      else{
+      peticionPost(); 
+        respuestas = [];   
+      }
     }
   
     const peticionPost=async()=>{
-        await axios.post(url_us+"/"+id,respuestas)
+      setLoading(true);
+        await axios.post(url_us+"/"+id+"/"+cookies.get('Id'),respuestas)
         .then(response=>{
           setData(data.concat(response.data));
           swal({
@@ -158,19 +202,31 @@ const Responder=(props)=>{
           console.log(error.request);
           console.log(error.message); 
         })
+        setLoading(false);
     }
 
     return (
-      <div className={styles.root}>
+    <div className={styles.root}>
     <Contenedor />
      
     <div className={styles.content}>
     <div className={styles.toolbar}> </div>   
     <section className="content">  
-    <h6>{nombrEncuesta}</h6>   
-    <p>Por favor, invierta unos pocos minutos de su tiempo para rellenar el siguiente cuestionario</p>
+     <h6>{descEncuesta}</h6>
+ {/* <h6>Encuesta de satisfacción de servicio, con las siguientes consideraciones:
+      <br />
+      Se considera el área de INFORMÁTICA a la gerencia de Alexander 
+      <br />
+      Se considera el área de SOPORTE a la gerencia de Julio Manzo 
+      <br />
+      Es obligatorio agregar comentarios
+      <br />
+      <i>Tus respuestas y tu nombre serán confidenciales </i>
+    </h6>
+     */}
     <hr/>
-     
+
+    <h6>{nombrEncuesta}</h6>  
     <form onSubmit={guardar}>
     <ol>
     {
@@ -182,38 +238,59 @@ const Responder=(props)=>{
             item.listaRes.map(subitem=>(
             <React.Fragment key={subitem.idRelacion}>            
                 <li className="list-group">
-                {subitem.idRespuesta===76 ?
-                (
-                <>
-                  <input className="form-check-input" type="radio" name={subitem.idPregunta} defaultValue={subitem.idRelacion} 
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name={subitem.idPregunta}
+                  defaultValue={subitem.idRelacion}
+                 /*  onChange={(e) =>
+                    setRespuestaIdRelacion(e.target.value)
+                  } */
+                  onChange={handleChange}
+                  onBlur={onblurIdRelacion}
                   ></input>
-                  <textarea className="form-control mb-2" type="text" required name={subitem.idPregunta} autoComplete="off" 
-                  onChange={handleChange}></textarea>        
-                </>
-                ):(
-                <>
-                  <input className="form-check-input" type="radio" name={subitem.idPregunta} defaultValue={subitem.idRelacion} 
-                    onChange={handleChange}></input>
-                    <label className="form-check-label" htmlFor="exampleRadios1">
-                        {subitem.respuesta}
-                    </label>  
-                </> 
-                 )
-                 }         
+                  <label className="form-check-label" htmlFor="exampleRadios1">
+                    {subitem.respuesta}
+                  </label>   
                 </li>            
             </React.Fragment>          
             ))
           } 
-          <br/>               
+         
+          <br/>   
+            Comentarios
+            <input
+            className="form-control mb-2"
+                    type="text"
+                    required
+                    name="respuestaLibre"
+                    autoComplete="off"
+                    maxLength="60"
+                    style={{width:'60%'}}
+                    /* onChange={(e) => setRespuestaLibre(e.target.value)} */
+                    onChange={handleChangeL}
+                    onBlur={onblurRespuesta}
+                  ></input>       
+          <br />            
           </ul>  
       </li> 
       </React.Fragment>
     ))
     }
     </ol>
-    <Button className="btn btn-primary btn-sm active float-right btn-block" endIcon={<SaveIcon />} type="submit">Guardar</Button> 
-    </form>
+    <Button className="btn btn-primary btn-sm active float-right btn-block" 
+    endIcon={<SaveIcon />} type="submit" disabled={loading ? true: false}> 
+      {loading ? "Guardando..." : "Guardar"}    
+      </Button>     
 
+      {loading ?
+        <Button className="btn btn-secondary btn-sm active float-right btn-block" 
+          endIcon={<SaveIcon />} type="submit"> 
+          Reenviar
+        </Button>   
+        :null
+      }
+    </form>
     </section>
     </div>   
     </div>

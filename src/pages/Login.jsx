@@ -116,7 +116,7 @@ return (
     </div>
     </form> 
     <hr />
-    {/* <Link to="/registro"><i className="fas fa-file-signature" /> Registrate aquí</Link>   */}
+      <Link to="/registro"><i className="fas fa-file-signature" /> Registrar nuevo usuario</Link>   
     </div>    
     </div>
     );
