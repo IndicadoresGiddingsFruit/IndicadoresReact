@@ -146,8 +146,6 @@ const Muestreos = (props) => {
   const [file, setFile] = useState(null);
   const [rutaFile, setRutaFile] = useState(null);
 
-  const [verAsesor, setverAsesor] = useState(true);
-
   //estatus de analisis
   var [estatus, setEstatus] = useState(null);
   //zonas de rastreo
@@ -860,48 +858,57 @@ const Muestreos = (props) => {
 
   //Cargar datos por usuario
   const peticionGet = async () => {
-    if (cookies.get("Depto") !== "null") {
+
+    //Asesores de Produccion, Calidad e Inocuidad
+    if (cookies.get("Depto") !== "null") 
+    {
       setOtros(false);
       await axios
         .get(url + `/${cookies.get("IdAgen")}/${null}/${cookies.get("Depto")}`)
         .then((res) => {
           setDataList(res.data);
 
+          //Habilitar permiso para editar solicitudes
           setactionEditar(true);
 
-          if (cookies.get("Depto") === "P") {
-            if (
-              cookies.get("IdAgen") === "1" ||
-              cookies.get("IdAgen") === "5"
-            ) {
-              setverAsesor(true);
-            } else {
-              setverAsesor(false);
-            }
-
+          //Asesores de producción
+          if (cookies.get("Depto") === "P") 
+          {   
             setactionCalidad(false);
             setactionFecha_ejecucion(false); 
 
-            for (const dataObj of res.data) {
+            //Solicitudes liberadas
+            for (const dataObj of res.data) 
+            {
               console.log(dataObj.liberacion);
 
-              if (dataObj.liberacion === "S") {
+              if (dataObj.liberacion === "S") 
+              {
                 setactionLiberar(true);
-              } else if (dataObj.liberacion === "") {
+              } 
+              else if (dataObj.liberacion === "") 
+              {
                 setactionLiberar(true);
               } else {
                 setactionLiberar(true);
               }
             }
-          } else if (cookies.get("Depto") == "C") {
+          } 
+          
+          //Asesores de Calidad
+          else if (cookies.get("Depto") == "C") {
             setactionCalidad(true);
             setactionLiberar(false);
             setactionFecha_ejecucion(false);
-          } else if (cookies.get("Depto") == "I") {
+          } 
+          
+          //Asesores de inocuidad
+          else if (cookies.get("Depto") == "I") 
+          {
             setactionFecha_ejecucion(true);
             setactionLiberar(false);
 
-            //IGARCIA - MCERVANTES
+            //Asesores de Inocuidad con permisos de Calidad
             if (cookies.get("IdAgen") === "304" || cookies.get("IdAgen") === "328") {
               setactionCalidad(true);
             } else {
@@ -909,8 +916,8 @@ const Muestreos = (props) => {
             }
           }
 
-          if (
-            cookies.get("IdAgen") === "1" ||
+          //Asesores con permisos para autorizar tarjetas
+          if (cookies.get("IdAgen") === "1" ||
             cookies.get("IdAgen") === "281" ||
             cookies.get("IdAgen") === "259" ||
             cookies.get("IdAgen") === "5"
@@ -919,11 +926,8 @@ const Muestreos = (props) => {
           } else {
             setactionTarjeta(false);
           }
-
-          if (cookies.get("IdAgen") === "1" || cookies.get("IdAgen") == "5") {
-            handlerCargarAsesores();
-          }
-
+          
+          //Asesores con permisos para subir analisis de residuos
           if (
             cookies.get("IdAgen") === "205" ||
             cookies.get("IdAgen") === "216"
@@ -931,12 +935,16 @@ const Muestreos = (props) => {
             setactionAnalisis(true);
           }
         });
-    } else {
+    } 
+    
+    //Usuarios para consultar informacion
+    else {
       await axios
         .get(url + `/${cookies.get("Id")}/${cookies.get("Tipo")}/${null}`)
         .then((res) => {
           setDataList(res.data);
 
+          //Permiso para autorizar tarjeta
           if (cookies.get("Id") === "352") {
             setactionTarjeta(true);
           }
@@ -951,29 +959,34 @@ const Muestreos = (props) => {
     }
   };
 
-  //
+  //Primer metodo que se ejecuta
   useEffect(() => {
     if (dataList.length === 0) {
       peticionGet();
     }
 
-    if (cookies.get("IdAgen") === "205") {
+    if (cookies.get("IdAgen") === "205") 
+    {
+      //Solicitudes del idagen 205
       setTableData(dataList.filter((x) => x.idAgenIS === 205));
-      setTableDataRM(
-        dataList.filter(
-          (x) => x.idAnalisis_Residuo !== null && x.num_analisis !== 1
-        )
-      );
+      //Remuestreos
+      setTableDataRM(dataList.filter((x) => x.idAnalisis_Residuo !== null && x.num_analisis !== 1));
+       //pendientes de analisis
       setTableDataP(dataList.filter((x) => x.idAnalisis_Residuo === null));
-    } else {
+    } 
+    else 
+    {
+      //todos los muestreos
       setTableData(dataList);
+      //Remuestreos
       setTableDataRM(dataList.filter((x) => x.num_analisis > 1));
+      //pendientes de analisis
       setTableDataP(dataList.filter((x) => x.idAnalisis_Residuo === null));
     }
   }, [dataList]);
 
   //cargar asesores
-  const handlerCargarAsesores = function (e) {
+  const cargarAsesores = function (e) {
     axios
       .get(
         "https://giddingsfruit.mx/ApiIndicadores/api/json" +
@@ -1088,7 +1101,7 @@ const Muestreos = (props) => {
               name="idAgen_Reasignado"
               className="form-control"
               onChange={handleChange}
-              onClick={handlerCargarAsesores}
+              onClick={cargarAsesores}
             >
               <option value={0}>--Seleccione--</option>
               {asesores.map((item) => (

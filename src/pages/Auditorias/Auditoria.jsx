@@ -91,9 +91,6 @@ const Auditoria = (props) => {
   const url_reporte = "https://giddingsfruit.mx/ApiIndicadores/api/reportes";
   //const url_reporte = "https://localhost:44344/api/reportes";
 
-  const url_productores = "https://giddingsfruit.mx/ApiIndicadores/api/prodProductoresCat";
-  //const url_productores = "https://localhost:44344/api/prodProductoresCat";
-
   const url_campos = "https://giddingsfruit.mx/ApiIndicadores/api/campos";
   //const url_campos = "https://localhost:44344/api/campos";
 
@@ -121,7 +118,6 @@ const Auditoria = (props) => {
   const [open, setOpen] = useState(false);
   const [cod_Campo, setCod_Campo] = useState(false);
 
-  //const [id, setId] = useState("");
   const [data, setData] = useState([]);
   const [camposAuditoria, setcamposAuditoria] = useState([]);
   const [puntosControl, setPuntosControl] = useState([]);
@@ -133,13 +129,19 @@ const Auditoria = (props) => {
   const [fotos, setFotos] = useState([]);
   const [rutaFile, setRutaFile] = useState(null);
 
+  //datos de la auditoria
   const auditoria = useSelector((v) => v.auditoria.arrayAuditorias);
+
+  //Campos agregados
   const campos = useSelector((v) => v.campos.arrayCampos);
+
+  //Acciones correctivas
   const puntosControlNO = useSelector((v) => v.auditoria.arrayLogNO);
-  const localidades = useSelector((v) => v.localidades.arrayLocalidades);
 
   const [idVarios, setIdVarios] = useState([]);
   const [errorFoto, setErrorFoto] = useState(null);
+
+  //Guardar nueva foto
   const [nvaFoto, setNvaFoto] = useState({
     descripcion: "",
     idProdAuditoria: parseInt(idAuditoria),
@@ -147,11 +149,15 @@ const Auditoria = (props) => {
     idLogAC: parseInt(filaSeleccionada.idLogAC)
   });
 
+  //Guardar nuevo campo
   const [auditoriaCampos, setAuditoriaCampos] = useState({
     IdProdAuditoria: parseInt(idAuditoria),
     cod_Campo: parseInt()
   });
+
   const [errorOption, setErrorOption] = useState(null);
+
+  //Editar punto de control respondido
   const [registroEdita, setRegistroEdita] = useState({
     opcion: "",
     justificacion: ""
@@ -159,12 +165,15 @@ const Auditoria = (props) => {
 
   const [pdfsAnalisis, setpdfsAnalisis] = useState([]);
   const [errorAnalisis, setErrorAnalisis] = useState(null);
+
+  //subir anaisis pdf
   const [nvoAnalisis, setNvoAnalisis] = useState({
     descripcion: "",
     idProdAuditoria: parseInt(idAuditoria),
     idProdAuditoriaCampo: "",
   });
 
+  //Actualizar datos de los campos
   const [upCampo, setUpCampo] = useState({
     ubicacion: "",
     codLocalidad: "",
@@ -172,13 +181,7 @@ const Auditoria = (props) => {
     gps_Longitude: ""
   });
 
-  const [upProd, setUpProd] = useState({
-    contacto: "",
-    rFC: "",
-    telefono: "",
-    correo: ""
-  });
-
+  //Actualizar datos de la auditoria
   const [upAuditoriaCampo, setupAuditoriaCampo] = useState({
     proyeccion: parseInt(),
     tipoCertificacion: ""
@@ -1135,14 +1138,6 @@ const Auditoria = (props) => {
     }));
   };
 
-  const handleChangeProd = (e) => {
-    const { name, value } = e.target;
-    setUpProd((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
   const handleChangeAuditoriaC = (e) => {
     const { name, value } = e.target;
     setupAuditoriaCampo((prevState) => ({
@@ -1159,27 +1154,6 @@ const Auditoria = (props) => {
     e.preventDefault();
     peticionPutDataCampo();
   };
-  /* 
-    const peticionPutDataProd = async () => {
-      setLoading(true);
-      await axios
-        .put(url_productores + "/" + filaSeleccionada.cod_Prod, upProd)
-        .then((response) => {
-          peticionPutDataCampo();
-        })
-        .catch((error) => {
-          swal({
-            title: "error",
-            text: error.request.response,
-            icon: "error",
-            button: "Cerrar",
-          });
-          console.log(error.response.data);
-          console.log(error.request);
-          console.log(error.message);
-        });
-      setLoading(false);
-    }; */
 
   const peticionPutDataCampo = async () => {
     setLoading(true);
@@ -2046,12 +2020,10 @@ const Auditoria = (props) => {
                       <Modal open={modalGetFotoNO} onClose={openClose_ModalGetFotoNO}>
                         {get_foto}
                       </Modal>
-
                     </div>
                   </div>
                 </>
               ) : null}
-
             </div>
           </div>
         </section>

@@ -68,8 +68,7 @@ const AccionCorrectiva = (props) => {
     console.log(data);
 
     const log = useSelector((v) => v.auditoria.objLog);
-    console.log(log)
-
+    
     const [loading, setLoading] = useState(false);
 
     const [registro, setRegistro] = useState({
@@ -158,7 +157,6 @@ const AccionCorrectiva = (props) => {
                                     <div className="row">
                                         <div className="col-12">
                                             <div className="form-group-sm">
-                                               {/*  {data.map((item) => ( */}
                                                     <Grid container spacing={1}>
                                                         <Grid item xs={12} md={12} lg={12}>
                                                             {data.noPunto} - {data.puntoControl}
@@ -217,7 +215,6 @@ const AccionCorrectiva = (props) => {
                                                             />
                                                         </Grid>
                                                     </Grid>
-                                               {/*  ))} */}
                                             </div>
                                         </div>
                                     </div>

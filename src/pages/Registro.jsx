@@ -110,8 +110,8 @@ const Registro = (props) => {
         });
       }).catch(error => {
         swal({
-          title: error.response.data,
-          text: "Favor de verificar la información",
+          title: "Favor de verificar la información",
+          text: error.response.data,
           icon: "error",
           button: "Cerrar",
         });
@@ -122,6 +122,7 @@ const Registro = (props) => {
       setLoading(false);
   }
 
+  //Cargar lista de las regiones
   useEffect(() => {
     dispatch(getListRegionesAction());
   }, []);
@@ -195,7 +196,6 @@ const Registro = (props) => {
                           name="idRegion"
                           className="form-control"
                           onChange={handleChange}
-                        //  onChange={(e) => setSearch(e.target.value)}
                         >
                           <option value={0}>--Seleccione--</option>
                           {regiones.map((item) => (

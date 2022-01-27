@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import swal from "sweetalert";

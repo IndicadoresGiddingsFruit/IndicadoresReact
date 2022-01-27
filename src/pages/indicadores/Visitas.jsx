@@ -123,12 +123,8 @@ const Visitas = () => {
 
   useEffect(() => {
     if (cookies.get("IdAgen") === "50" || cookies.get("IdAgen") === "1" || cookies.get("IdAgen") === "196" || cookies.get("IdAgen") === "2" || cookies.get("IdAgen") === "115" || cookies.get("IdAgen") === "2" || cookies.get("IdAgen") === "259") {
-      /* if (cookies.get("IdAgen") === "50") {
-        setAdminP(true);
-        dispatch(getListAsesoresAction("P"));
-      }  */
-
-      if (cookies.get("Depto") === "P" || cookies.get("IdAgen") === "50") {
+      if (cookies.get("Depto") === "P" || cookies.get("IdAgen") === "50") 
+      {
         setAdminP(true);
         dispatch(getListAsesoresAction("P"));
       }

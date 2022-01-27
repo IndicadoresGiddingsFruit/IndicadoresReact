@@ -13,7 +13,6 @@ import {
 import {
   getListAnalisisAction
 } from "../../redux/Analisis/AnalisisD";
-import Loading from './../Loading.js';
 
 const ExcelFile = ExportExcel.ExcelFile;
 const ExcelSheet = ExportExcel.ExcelSheet;
@@ -52,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+//fltrar tabla 
 function searchData(search) {
   return function (item) {
     return (
@@ -67,20 +67,37 @@ const Resultados = () => {
   //const url="https://localhost:44344/api/analisis";
   var cod_Prod;
   const cookies = new Cookies();
-  const dispatch = useDispatch();
-  //const [data, setData] = useState([]);
+  const dispatch = useDispatch(); 
   const [loading, setLoading] = useState(false);
+
+  //Abrir ventana modal para editar registro
   const [modalEditar, setModalEditar] = useState(false);
+
+  //Guardar el nuevo estatus editado
   const [estatus, setEstatus] = useState(null);
-  const [admin, setAdmin] = useState(false);
-  //const [zonas, setzonas] = useState([]);
-  const [codZona, setcodZona] = useState([null]);//cod de zonas
+
+  //Permisos para editar y eliminar analisis
+  const [admin, setAdmin] = useState(false); 
+
+  //Cargar zonas de rastreo
+  const zonas = useSelector((v) => v.zonas.arrayZonas);
+
+  //Guardar cantidad dias para Liberacion para USA
   const [liberacionUSA, setLiberacionUSA] = useState(0);
+
+   //Guardar cantidad dias para Liberacion para Europa
   const [liberacionEU, setLiberacionEU] = useState(0);
+
+  //Guardar datos del registro seleccionado
   const [filaSeleccionada, setfilaSeleccionada] = useState({});
+
+  //Texto para filtrat la tabla
   const [search, setSearch] = useState("");
+
+  //Id del analisis 
   var idAnalisis;
 
+  //Guardar datos del registro editado
   const [filaEditada, setfilaEditada] = useState({
     codZona: "",
     fecha_envio: "",
@@ -96,26 +113,27 @@ const Resultados = () => {
     organico: "",
     parteMuestreada: ""
   })
-
-  //  const zonas = useSelector((v) => v.zonas.arrayZonas);
-  const data = useSelector((v) => v.analisis.arrayAnalisis);
-  console.log(data);
+ 
+  //Cargar datos para llenar la tabla
+  const data = useSelector((v) => v.analisis.arrayAnalisis); 
 
   const getdata = async () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      if (cookies.get('Depto') !== 'null') {
+      //Asesores
+      if (cookies.get('Depto') !== 'null') 
+      {
         dispatch(getListAnalisisAction(cookies.get('IdAgen'), null, cookies.get('Depto'), 0, null));
       }
+      //Usuarios que solo consultan
       else {
         dispatch(getListAnalisisAction(cookies.get('Id'), cookies.get('Tipo'), null, 0, null));
       }
-    }, 3000)
-
-    
+    }, 3000)    
   }
 
+  //Descargar PDF
   const getPDF = async () => {
     axios({
       url: url + `/${idAnalisis}`,
@@ -145,7 +163,10 @@ const Resultados = () => {
     })
   }
 
-  useEffect(() => {
+//Primer metodo que se ejecuta
+  useEffect(() => 
+  {
+    //Usuarios con permisos de editar y borrar analisis
     if (cookies.get('IdAgen') === '205' || cookies.get('IdAgen') === '216') {
       setAdmin(true);
     }
@@ -155,10 +176,12 @@ const Resultados = () => {
     getdata();
   })
 
+  //Cargar zonas de rastreo
   const cargarZonas = async () => {
     dispatch(getListZonasAction());
   }
 
+  //Cambio de estado del formulario para editar analisis
   const handleChange = e => {
     const { name, value } = e.target;
     setfilaEditada(prevState => ({
@@ -167,6 +190,7 @@ const Resultados = () => {
     }));
   }
 
+   //Cambio de estado del select Estatus
   const handleChangeEstatus = e => {
     setEstatus(e.target.value);
 
@@ -217,10 +241,15 @@ const Resultados = () => {
     idAnalisis = registro.id;
     cod_Prod = registro.cod_Prod;
 
-    if (opcion === "Editar") {
+    //Editar analisis
+    if (opcion === "Editar") 
+    {
       abrirCerrarModalEditar()
     }
-    if (opcion === "Pdf") {
+
+    //Descargar pdf de analisis
+    if (opcion === "Pdf") 
+    {
       if (cookies.get('IdAgen') === '205' || cookies.get('IdAgen') === '216') {
         getPDF();
       }
@@ -232,7 +261,10 @@ const Resultados = () => {
         });
       }
     }
-    else {
+    
+    //Eliminar analisis
+    else 
+    {
       abrirModalEliminar()
     }
   }
@@ -417,14 +449,20 @@ const Resultados = () => {
                     </Grid>
                     <Grid item xs={12} md={12} lg={6}>
                       Zona:
-                      {/*  <select name="codZona" className="form-control" onChange={handleChange} onClick={cargarZonas}>
-                        <option value={0}>Seleccione</option>
-                        {
-                          zonas.map(item => (
-                            <option key={item.codigo} value={item.codigo}>{item.descZona}</option>
-                          )
-                          )}
-                      </select> */}
+                      <select
+                          name="codZona"
+                          id="codZona"
+                          className="form-control"
+                          onChange={handleChange}
+                          onClick={cargarZonas}
+                        >
+                          <option value={0}>Seleccione</option>
+                          {zonas.map((item) => (
+                            <option key={item.codigo} value={item.codigo}>
+                              {item.descZona}
+                            </option>
+                          ))}
+                        </select>
                     </Grid>
                     <Grid item xs={12} md={12} lg={6}>
                       Fecha de envio:
@@ -566,7 +604,6 @@ const Resultados = () => {
       <div className={styles.content}>
         <div className={styles.toolbar}></div>
         
-
         <section className="content font-weight-bold text-secondary">
           <Paper className={styles.paper}>
             <Typography

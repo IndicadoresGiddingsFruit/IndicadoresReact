@@ -2,19 +2,20 @@ import React, { useEffect, useState } from "react";
 import Contenedor from "../Contenedor.jsx";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { Modal, Grid, Button, Tabs, Tab, Box, Paper } from "@material-ui/core";
+import { Grid, Tabs, Tab, Box, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import swal from "sweetalert";
 import { withRouter, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getListZonasAction } from "../../redux/Catalogos/ZonasD";
 import { getListAuditoriasAction } from "../../redux/Auditoria/AuditoriaD";
+import { getListAsesoresAction } from "../../redux/Catalogos/AgentesD";
 import DoneIcon from "@material-ui/icons/Done";
 import moment from "moment";
 import "../../css/index.css";
 import "../../css/Table.css";
-import { getListAsesoresAction } from "../../redux/Catalogos/AgentesD";
 
+//estilos css
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -59,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+//Filtrar tabla
 function searchData(search) {
   return function (item) {
     return (
@@ -73,22 +75,35 @@ function searchData(search) {
 const Nueva = (props) => {
   const styles = useStyles();
   const url_auditoria = "https://giddingsfruit.mx/ApiIndicadores/api/auditoria";
-  const url_campos = "https://giddingsfruit.mx/ApiIndicadores/api/campos";
-  const url_reporte = "https://giddingsfruit.mx/ApiIndicadores/api/reportes";
-
-  //const url_reporte = "https://localhost:44344/api/reportes";
   //const url = "https://localhost:44344/api/auditoria";
 
-  var cod_Campo;
-  const [search, setSearch] = useState("");
+  const url_campos = "https://giddingsfruit.mx/ApiIndicadores/api/campos";
+
+  const url_reporte = "https://giddingsfruit.mx/ApiIndicadores/api/reportes";
+  //const url_reporte = "https://localhost:44344/api/reportes";
+
   const cookies = new Cookies();
   const dispatch = useDispatch();
+
+  //Codigo del campo seleccionado
+  var cod_Campo;
+
+  //Texto para filtrar la tabla
+  const [search, setSearch] = useState("");  
+
+  //Zonas de rastreo
   const zonas = useSelector((v) => v.zonas.arrayZonas);
 
+  //Auditorias creadas
   const auditorias = useSelector((v) => v.auditoria.arrayAuditorias);
-  const asesores = useSelector((v) => v.agentes.arrayAsesores);
-  const [value, setValue] = React.useState("2");
 
+  //Lista de asesores
+  const asesores = useSelector((v) => v.agentes.arrayAsesores);
+
+  //Pestañas
+  const [value, setValue] = React.useState("2");
+  
+  //Cambiar de una pestaña a otra
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
   };
@@ -97,6 +112,7 @@ const Nueva = (props) => {
   const [loading, setLoading] = useState(false);
   const [admin, setAdmin] = useState(false);
 
+  //Datos de la nueva auditoria
   const [auditoria, setAuditoria] = useState({
     idAgen: parseInt(cookies.get("IdAgen")),
     cod_Prod: "",
@@ -153,7 +169,7 @@ const Nueva = (props) => {
   };
 
   useEffect(() => {
-    //HMTORRES || GXICOHTENCATL
+    //Jefes de zona
     if (cookies.get("IdAgen") === "281" || cookies.get("IdAgen") === "326" || cookies.get("IdAgen") === "204" || cookies.get("IdAgen") === "298" || cookies.get("IdAgen") === "322") {
       setAdmin(true);
       dispatch(getListAsesoresAction('I'));

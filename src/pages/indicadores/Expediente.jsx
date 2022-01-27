@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from 'axios';
 import Cookies from "universal-cookie";
 import Contenedor from "../Contenedor.jsx";
 import { makeStyles, Grid, Paper, Typography } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import GetAppIcon from '@material-ui/icons/GetApp';
-import ExportExcel from 'react-export-excel';
 import {
     getList
 } from "../../redux/Expediente/ExpedienteD";
@@ -60,12 +57,6 @@ const Expediente = () => {
     const dispatch = useDispatch();
 
     const [admin, setAdmin] = useState(false);
-    const [eficiencia, setEficiencia] = useState(false);
-    const [efectividad, setEfectividad] = useState(false);
-    const [asertividad, setAsertividad] = useState(false);
-    const [recuperación, setRecuperacion] = useState(false);
-
-    //const [data, setData] = useState(null);
 
     const [search, setSearch] = useState("");
     const data = useSelector((v) => v.expediente.arrayData);
@@ -86,16 +77,6 @@ const Expediente = () => {
         }, 5000)
         dispatch(getList(cookies.get("IdAgen")));
     };
-
-    /*  const getData = async () => {
-         await axios
-             .get(url + `/${cookies.get("IdAgen")}`)
-             .then((res) => {
-                 setData(res.data);
-                 console.log(data);
-             });
-     };
-  */
 
     useEffect(() => {
         if (cookies.get("IdAgen") === "1" || cookies.get("IdAgen") === "5" || cookies.get("IdAgen") === "50") {

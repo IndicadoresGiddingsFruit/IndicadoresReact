@@ -11,7 +11,7 @@ import Auditorias from "../pages/Auditorias/Nueva.jsx";
 import { Provider } from "react-redux";
 import generateStoreAuditorias from "../redux/Auditoria/storeAuditoria";
 
-function App(props) {
+function App() {
   const cookies = new Cookies();
   const [financiamientos, setFinanciamientos] = useState(false);
   const [inventario, setInventario] = useState(false);
@@ -24,13 +24,21 @@ function App(props) {
 
   const analisis = generateStoreAnalisis();
 
-  useEffect(() => {
-    if (cookies.get('Tipo') !== 'null' || cookies.get('Depto') !== 'null') {
-      if (cookies.get('Tipo') !== null) {
-        if (cookies.get('Tipo') === 'A') {
+  useEffect(() => 
+  {
+    //Asesores y usuarios que consultan muestreos y analisis
+    if (cookies.get('Tipo') !== 'null' || cookies.get('Depto') !== 'null') 
+    {
+      if (cookies.get('Tipo') !== null) 
+      {
+        //Inventario
+        if (cookies.get('Tipo') === 'A') 
+        {
           setInventario(true);
         }
-        else {
+        else 
+        {
+          //Usuario ADMIN
           if (cookies.get('Id') === '352') {
             setFinanciamientos(true);
           }
@@ -40,19 +48,25 @@ function App(props) {
         }
       }
 
-      if (cookies.get('Depto') !== null) {
-        //GXICOHTENCATL
-        if (cookies.get('IdAgen') === '326') {
+      //Asesores
+      if (cookies.get('Depto') !== null) 
+      {
+        //Auditorias
+        if (cookies.get('IdAgen') === '326') 
+        {
           setAuditorias(true);
           setEncuestas(false);
           setAgente(true);
         }
-        else {
+        else 
+        {
           setEncuestas(false);
           setAgente(true);
         }
       }
     }
+
+    //Demás usuarios
     else {
       setEncuestas(true);
       setInventario(false);

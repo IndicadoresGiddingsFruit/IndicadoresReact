@@ -8,18 +8,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Cookies from 'universal-cookie';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import { Link, NavLink, withRouter } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import CheckCircleTwoToneIcon from '@material-ui/icons/CheckCircleTwoTone';
 import LocationOnTwoToneIcon from '@material-ui/icons/LocationOnTwoTone';
 import AssignmentTurnedInTwoToneIcon from '@material-ui/icons/AssignmentTurnedInTwoTone';
-import InsertDriveFileTwoToneIcon from '@material-ui/icons/InsertDriveFileTwoTone';
 import SpaTwoToneIcon from '@material-ui/icons/SpaTwoTone';
 import EditLocationTwoToneIcon from '@material-ui/icons/EditLocationTwoTone';
-import MultilineChartIcon from '@material-ui/icons/MultilineChart';
-
-import FolderSharedTwoToneIcon from '@material-ui/icons/FolderSharedTwoTone';
-
 import BarChartTwoToneIcon from '@material-ui/icons/BarChartTwoTone';
 import BlockIcon from '@material-ui/icons/Block';
 import MonetizationOnTwoToneIcon from '@material-ui/icons/MonetizationOnTwoTone';
@@ -100,23 +95,16 @@ const Contenedor = (props) => {
   const { window } = props;
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [encuestas, setEncuestas] = useState(false);
   const [tipoAgentes, setTipoAgentes] = useState(false);
   const [tipoA, setTipoA] = useState(false);
   const [tipoP, setTipoP] = useState(false);
   const [tipoC, setTipoC] = useState(false);
   const [analisis, setAnalisis] = useState(false);
   const [inventario, setInventario] = useState(false);
-  const [openAnalisis, setopenAnalisis] = useState(false);
-  const [openMuestreos, setopenMuestreos] = useState(false);
-  const [openIndicadores, setopenIndicadores] = useState(false);
   const [openFinanciamientos, setFinanciamientos] = useState(false);
-  const [openEncuestas, setopenEncuestas] = useState(false);
   const [openBloqueo, setopenBloqueo] = useState(false);
-  const [notificaciones, setNotificaciones] = useState(false);
   const [modalCambiarP, setmodalCambiarP] = useState(false);
   const [admin, setAdmin] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
   const [loading, setLoading] = useState(false);
@@ -130,40 +118,31 @@ const Contenedor = (props) => {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
-  const handleListItemClick = (event, index) => {
-    setSelectedIndex(index);
-  };
-
-  const handleClickEncuestas = () => {
-    setopenEncuestas(!openEncuestas);
-  };
-
-  const handleClickIndicadores = () => {
-    setopenIndicadores(!openIndicadores);
-  };
-
-  const handleClickMuestreos = () => {
-    setopenMuestreos(!openMuestreos);
-  };
-
-  const handleClickAnalisis = () => {
-    setopenAnalisis(!openAnalisis);
-  };
-
-  const validaciones = () => {
-    if (cookies.get('Depto') !== 'null' || cookies.get('Tipo') !== 'null') {
-      /* agentes */
-      if (cookies.get('Depto') === 'P' || cookies.get('Depto') === 'C' || cookies.get('Depto') === 'I') {
+  
+  const validaciones = () => 
+  {
+     //Asesores y usuarios que consultan muestreos y analisis
+    if (cookies.get('Depto') !== 'null' || cookies.get('Tipo') !== 'null') 
+    {
+     
+      if (cookies.get('Depto') === 'P' || cookies.get('Depto') === 'C' || cookies.get('Depto') === 'I') 
+      {
+         //Asesor que libera analisis de residuos
         if (cookies.get('IdAgen') === '205') {
           setAnalisis(true);
         }
+
+        //Produccion y DCERVANTES
         if (cookies.get('Depto') === 'P' || cookies.get('IdAgen') === '50') {
           setTipoP(true);
         }
+
+        //Inocuidad
         if (cookies.get('Depto') === 'I') {
           setopenBloqueo(true);
         }
+
+        //Calidad
         if (cookies.get('Depto') === 'C') {
           setTipoC(true);
         }
@@ -172,13 +151,17 @@ const Contenedor = (props) => {
       }
 
       /* usuarios consulta */
-      else if (cookies.get('Tipo') !== null) {
+      else if (cookies.get('Tipo') !== null) 
+      {
         if (cookies.get('Tipo') === 'A') {
           setInventario(true);
         }
 
-        else {
-          if (cookies.get('Id') === '352') {
+        else 
+        {
+          //Usuario ADMIN
+          if (cookies.get('Id') === '352') 
+          {
             setAdmin(true);
             setFinanciamientos(true);
           }
@@ -190,20 +173,20 @@ const Contenedor = (props) => {
           setAdmin(false);
         }
       }
-    }
-
-    else {
-
-    }
+    }  
   }
 
   useEffect(() => {
-    if (cookies.get('Id') === undefined) {
+    //si se han perdido las cookies regresar al login
+    if (cookies.get('Id') === undefined) 
+    {      
       props.history.push('/');
     }
+    //validar usuarios
     validaciones();
   }, []);
 
+  //Cerar sesión
   const logout = () => {
     cookies.remove('Id', { path: '/' });
     cookies.remove('Nombre', { path: '/' });
@@ -253,6 +236,7 @@ const Contenedor = (props) => {
     setOpen(!open);
   };
 
+  //Menu izquierdo
   const drawer = (
     <div>
       <div className="d-flex justify-content-center">
@@ -263,7 +247,7 @@ const Contenedor = (props) => {
         </IconButton>
       </div>
 
-      <div>  {/* style={{backgroundColor:'#3f51b5'}} */}
+      <div> 
         <List>
           <List
             component="nav"
@@ -412,36 +396,7 @@ const Contenedor = (props) => {
                   </>
                 )
               }
-
-              {/* Calidad */}
-              {
-                tipoC ? (
-                  <>
-                   {/*  <List
-                      component="nav"
-                      aria-labelledby="nested-list-subheader"
-                      subheader={
-                        <ListSubheader component="a" id="nested-list-subheader" data-toggle="collapse" href="#visitasCalidad">
-                          <BarChartTwoToneIcon /> Indicadores
-                        </ListSubheader>
-                      }
-                      className={classes.nested_root}
-                    >
-                      <ListItem id="visitasCalidad" className="panel-collapse collapse m-0 p-0">
-                        <NavLink className="btn" to="/visitas" exact>
-                          <ListItemIcon> <LocationOnTwoToneIcon />
-                            <ListItemText primary="Visitas" /></ListItemIcon>
-                        </NavLink>
-                      </ListItem>
-
-                    </List> */}
-                  </>
-                ) : (
-                  <>
-                  </>
-                )
-              }
-
+ 
               <Divider />
 
               <List
@@ -597,6 +552,8 @@ const Contenedor = (props) => {
     }
   }
 
+
+  //Manejo de estado de formulario para cambiar contraseña
   const handleChange = e => {
     const { name, value } = e.target;
 
@@ -612,15 +569,17 @@ const Contenedor = (props) => {
     }));
   }
 
+  //Guardar la nueva contraseña
   const putCambiarClave = async () => {
     setLoading(true);
     await axios.put(url, nuevaclave)
       .then(response => {
+        //cerrar sesion
         logout();
       }).catch(error => {
         swal({
-          title: error.response,
-          text: "Favor de verificar la información",
+          title: "Favor de verificar la información",
+          text: error.response.data,
           icon: "error",
           button: "Cerrar",
         });
@@ -699,44 +658,13 @@ const Contenedor = (props) => {
 
           </IconButton>
 
+         {/*  Nombre completo del usuario logueado */}
           <div className="d-sm-inline-block form-inline">
             <Typography variant="h6">{cookies.get('Completo')}</Typography>
           </div>
 
           <ul className="navbar-nav ml-auto">
             <li className="nav-item dropdown no-arrow">
-              {notificaciones ?
-                <>
-                  <div className="btn-group">
-                    <Button variant="text" color="inherit" className="nav-link" data-toggle="dropdown">
-                      <i className="fas fa-bell fa-fw" />
-                      <span className="badge badge-danger badge-counter">+</span>
-                    </Button>
-                    <div className="dropdown-menu">
-                      <div>
-                        <h6 className="dropdown-header">
-                          Análisis Fuera de Límite
-                        </h6>
-
-                        <a className="dropdown-item d-flex align-items-center" href="#">
-                          <div className="mr-3">
-                            <div className="icon-circle bg-warning">
-                              <i className="fas fa-exclamation-triangle text-white" />
-                            </div>
-                          </div>
-                          <div>
-                            {/*  <div className="small text-gray-500">December 2, 2019</div> */}
-                            Existen análisis pendientes por Liberar
-                          </div>
-                        </a>
-                        <Link className="dropdown-item text-center small text-gray-500" to="/liberar">Ver todo</Link>
-                      </div>
-                    </div>
-                  </div>
-                </>
-                : null
-              }
-
               <div className="btn-group">
                 <Button variant="text" color="inherit" className="nav-link" data-toggle="dropdown" endIcon={<ArrowDropDownIcon />}></Button>
                 <div className="dropdown-menu">

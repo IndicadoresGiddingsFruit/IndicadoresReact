@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+//Filtrar tabla
 function searchData(search) {
   return function (item) {
     return (
@@ -57,10 +58,17 @@ const LiberarAnalisis = (props) => {
   //const url="https://localhost:44344/api/analisis";
   const cookies = new Cookies();
   const dispatch = useDispatch();
+
+  //Cargar información
   const data = useSelector((v) => v.analisisFL.arrayFueraLimite);
+
+  //Buscar
   const [search, setSearch] = useState("");
+
+  //Id para liberar
   const [id, setId] = useState(null); 
 
+  //Traer información 
   useEffect(() => {
     dispatch(getListAnalisisFueraLimiteAction(cookies.get('IdAgen'), null, cookies.get('Depto'), 0, 'F'));
   })

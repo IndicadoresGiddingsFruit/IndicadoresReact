@@ -108,7 +108,7 @@ const Bloqueo=()=>{
     }) 
   } 
 
-  const handlerCargarInfo= function(){     
+  const cargarInfo= function(){     
     axios.get(url_campos+`/${nuevo.cod_Prod}/${0}`)
     .then(res=>{   
     for(const dataObj of res.data)
@@ -139,7 +139,7 @@ return(
         <Grid item xs={12} md={12} lg={6}>
         Codigo:   
         <input 
-          type="text" required onBlur={handlerCargarInfo}
+          type="text" required onBlur={cargarInfo}
           className="form-control" name="cod_Prod" maxLength={5} minLength={5} variant="outlined"
           onChange={handleChange} autoComplete="off"
         />       

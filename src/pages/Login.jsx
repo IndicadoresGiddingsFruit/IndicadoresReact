@@ -20,6 +20,7 @@ function Login(props) {
       password:''
  });
 
+ //Cambio de estado de los inputs del formulario
  const handleChange=e=>{
   const {name,value}=e.target;
       setForm({
@@ -61,6 +62,7 @@ function Login(props) {
               cookies.set('Tipo',respuesta.tipo,{path:'/'});
               cookies.set('Depto', respuesta.depto, {path: '/'});            
              
+              //Ir a la página de inicio
               props.history.push('/index');             
           }
           else{

@@ -8,8 +8,7 @@ import Registro from "../pages/Registro.jsx";
 
 /* muestreos */
 import Nuevo from "../pages/Muestreos/Nuevo.jsx";
-import Muestreos from "../pages/Muestreos/Muestreos.jsx";
-import Evaluacion from "../pages/Muestreos/Evaluacion.jsx";
+import Muestreos from "../pages/Muestreos/Muestreos.jsx"; 
 import Bloqueo from "../pages/Muestreos/Bloqueo.jsx";
 import generateStoreMuestreo from "../redux/Muestreos/storeMuestreos";
 
@@ -103,10 +102,6 @@ function Routes() {
         </Route>
 
         {/* muestreos */}
-        <Route exact path="/evaluacion">
-          <Evaluacion />
-        </Route>
-
         <Route exact path="/nuevo">
           <Nuevo />
         </Route>
