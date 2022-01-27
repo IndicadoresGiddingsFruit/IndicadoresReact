@@ -1,32 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "universal-cookie";
-import { Modal, Grid, Button, Tabs, Tab, Box, AppBar } from "@material-ui/core";
+import { Modal, Grid, Button, Tabs, Tab, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment";
 import "moment/locale/es"; // Pasar a español
 import swal from "sweetalert";
 import Contenedor from "../Contenedor.jsx";
-import PropTypes from "prop-types";
 import AddBox from "@material-ui/icons/AddBox";
 import Clear from "@material-ui/icons/Clear";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import TableContainer from "@material-ui/core/TableContainer";
-import Loading from './../Loading.js';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import DoneIcon from "@material-ui/icons/Done";
 import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
 import { format } from "date-fns";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getListAsesoresAction
-} from "../../redux/Catalogos/AgentesD";
-import {
-  getListZonasAction
-} from "../../redux/Catalogos/ZonasD";
-import Pagination from "react-paginating";
+
 import '../../css/index.css';
 
 function searchData(search) {
@@ -114,6 +105,7 @@ const Muestreos = (props) => {
   //const url="https://localhost:44344/api/muestreo";
 
   const url_calidad = "https://giddingsfruit.mx/ApiIndicadores/api/calidadmuestreo";
+
   const url_campos = "https://giddingsfruit.mx/ApiIndicadores/api/campos";
 
   const url_analisis = "https://giddingsfruit.mx/ApiIndicadores/api/analisis";
@@ -124,55 +116,75 @@ const Muestreos = (props) => {
 
   const cookies = new Cookies();
 
-  const [dataList, setDataList] = useState([]);
-  const [searchText, setSearchText] = useState("");
+  const [dataList, setDataList] = useState([]); 
+  //todos
   const [tabledata, setTableData] = useState([]);
+  //remuestreo
   const [tabledataRM, setTableDataRM] = useState([]);
+  //pendiente de analisis
   const [tabledataP, setTableDataP] = useState([]);
-  const limit = 10;
-  const pageCount = 3;
-  const total = tabledata.length * limit;
-  
-  const [currentPage, setcurrentPage] = useState(1);
 
   const [search, setSearch] = useState("");
 
   var user;
   var cod_zona;
+  //cantidad de dias para Liberacion USA
   const [liberacionUSA, setLiberacionUSA] = useState(0);
+  //cantidad de dias para Liberacion Europa
   const [liberacionEU, setLiberacionEU] = useState(0);
+
   const [f_envio, setf_envio] = useState(format(new Date(), "yyyy-MM-dd"));
-  const [f_entrega, setf_entrega] = useState(format(new Date(), "yyyy-MM-dd"));
-  const [spinner, setSpinner] = useState(false);
+  const [f_entrega, setf_entrega] = useState(format(new Date(), "yyyy-MM-dd")); 
   const [loading, setLoading] = useState(false);
+
+  //usuarios que solo consultan datos pero no son asesores
   const [otros, setOtros] = useState(false);
 
   var [data, setData] = useState([]);
 
+  //imagne de autorizar tarjeta
   const [file, setFile] = useState(null);
   const [rutaFile, setRutaFile] = useState(null);
 
   const [verAsesor, setverAsesor] = useState(true);
+
+  //estatus de analisis
   var [estatus, setEstatus] = useState(null);
+  //zonas de rastreo
   const [zonas, setZonas] = useState([]);
+  //listado de asesores
   const [asesores, setasesores] = useState([]);
+  //listado de sectores
   const [sectores, setSectores] = useState([]);
   const [idagens, setidagens] = useState([null]);
+  //asesor a reasignar
   const [asesorReasignado, setasesorReasignado] = useState(null);
 
+  //Ventana emergente para editar solicitud
   const [modalEditar, setmodalEditar] = useState(false);
-  const [modalCalidad, setmodalCalidad] = useState(false);
-  const [modalFecha_muestreo, setmodalFecha_muestreo] = useState(false);
-  const [modalLiberar, setmodalLiberar] = useState(false);
-  const [modalAnalisis, setmodalAnalisis] = useState(false);
-  const [modalReasignar, setmodalReasignar] = useState(false);
-  const [modalTarjeta, setmodalTarjeta] = useState(false);
-
   const [actionEditar, setactionEditar] = useState(false);
-  const [actionLiberar, setactionLiberar] = useState(false);
+
+   //Ventana emergente para agregar estatus de calidad
+  const [modalCalidad, setmodalCalidad] = useState(false);
   const [actionCalidad, setactionCalidad] = useState(false);
+
+   //Ventana emergente para agregar fecha de muestreo
+  const [modalFecha_muestreo, setmodalFecha_muestreo] = useState(false);
   const [actionFecha_ejecucion, setactionFecha_ejecucion] = useState(false);
+
+   //Ventana emergente para liberar solicitud
+  const [modalLiberar, setmodalLiberar] = useState(false);
+  const [actionLiberar, setactionLiberar] = useState(false);
+
+   //Ventana emergente para agregar resultado de analisis
+  const [modalAnalisis, setmodalAnalisis] = useState(false);
   const [actionAnalisis, setactionAnalisis] = useState(false);
+
+   //Ventana emergente para reasignar codigo
+  const [modalReasignar, setmodalReasignar] = useState(false);
+
+   //Ventana emergente para autorizar tarjeta
+  const [modalTarjeta, setmodalTarjeta] = useState(false);
   const [actionTarjeta, setactionTarjeta] = useState(false);
 
   const [campos, setcampos] = useState([]);
@@ -207,78 +219,9 @@ const Muestreos = (props) => {
     liberaDocumento: "",
   });
 
-  const [nvoSector, setNvoSector] = useState({
-    sector: parseInt(),
-  });
-
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("cod_prod");
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(25);
-
   const [value, setValue] = React.useState("1");
-
   const handleChangeTab = (event, newValue) => {
     setValue(newValue);
-  };
-
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = tabledata.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelected(newSelected);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 25));
-    setPage(0);
-  };
-
-  const isSelected = (name) => selected.indexOf(name) !== -1;
-
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, tabledata.length - page * rowsPerPage);
-
-  const handleChangeSector = (e) => {
-    const { name, value } = e.target;
-    setNvoSector((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-    console.log(nvoSector);
   };
 
   const handleChange = (e) => {
@@ -313,16 +256,18 @@ const Muestreos = (props) => {
     }));
   };
 
-  const handlerZonas = function (e) {
+  //Cargar zonas de rastreo
+  const cargarZonas = function (e) {
     cod_zona = e.target.value;
     axios
-      .get("https://giddingsfruit.mx/ApiIndicadores/api/json")
+      .get("https://giddingsfruit.mx/ApiIndicadores/api/prodzonasrastreo")
       .then((res) => {
         setZonas(res.data);
       });
   };
 
-  const handlerCargarCampos = function (e) {
+  //Cargar campos por codigo de productor
+  const cargarCampos = function (e) {
     axios
       .get(
         "https://giddingsfruit.mx/ApiIndicadores/api/campos" +
@@ -330,11 +275,10 @@ const Muestreos = (props) => {
       )
       .then((res) => {
         setcampos(res.data);
-        /*   opcion_campo = e.target.value;
-        handlerCargarinfo(opcion_campo); */
       });
   };
 
+  //Editar solicitud
   const peticionPutEditar = async (e) => {
     e.preventDefault();
 
@@ -379,7 +323,6 @@ const Muestreos = (props) => {
               fecha_ejecucion: item.fecha_ejecucion,
               idAgen: item.idAgen,
               asesor: item.asesor,
-              /*  idRegion:item.idRegion, */
               idAgenC: item.idAgenC,
               asesorC: item.asesorC,
               asesorCS: item.asesorCS,
@@ -389,7 +332,6 @@ const Muestreos = (props) => {
               incidencia: item.incidencia,
               propuesta: item.propuesta,
               compras_oportunidad: filaSeleccionada.compras_oportunidad,
-              /* fecha_analisis:item.fecha_analisis, */
               analisis: item.analisis,
             }
             : item
@@ -410,6 +352,7 @@ const Muestreos = (props) => {
       });
   };
 
+  //Agregar fecha de muestreo y sectores
   const peticionPutFecha_Muestreo = async () => {
     await axios
       .put(
@@ -483,6 +426,7 @@ const Muestreos = (props) => {
       });
   };
 
+  //Agregar estatus de calidad
   const peticionPutCalidad = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -551,6 +495,7 @@ const Muestreos = (props) => {
     setLoading(false);
   };
 
+  //Liberar solicitud
   const peticionPatchLiberar = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -620,7 +565,7 @@ const Muestreos = (props) => {
     setLoading(false);
   };
 
-  /* Tarjeta */
+  //Autoriza tarjeta
   const peticionPatchTarjeta = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -701,6 +646,7 @@ const Muestreos = (props) => {
     setFile(e);
   };
 
+  //Subir imagen de evidencia cuando se autoriza la tarjeta
   const patchsubirImagen = async () => {
     const i = new FormData();
 
@@ -720,7 +666,7 @@ const Muestreos = (props) => {
     setLoading(false);
   };
 
-  //cargar imagen
+  //cargar de evidencia cuando se autoriza la tarjeta
   const getCargarImagen = async () => {
     axios
       .get(url + `/${filaSeleccionada.idMuestreo}`)
@@ -735,7 +681,7 @@ const Muestreos = (props) => {
     setmodalTarjeta(true);
   };
 
-  /* Reasignar */
+  //Reasignar código
   const peticionPutReasignar = async () => {
     await axios
       .put(
@@ -774,6 +720,7 @@ const Muestreos = (props) => {
       });
   };
 
+  //Guardar análisis
   const enviarAnalisis = (e) => {
     e.preventDefault();
 
@@ -863,6 +810,7 @@ const Muestreos = (props) => {
     setNvoanalisis(null);
   };
 
+  //Subir pdf de resultado de analsis
   const patchsubirPDF = async (idAnalisis) => {
     const f = new FormData();
 
@@ -883,6 +831,7 @@ const Muestreos = (props) => {
       });
   };
 
+  //Seleccionar registro al elegir una acción
   const seleccionarRegistro = (muestreo, caso) => {
     setfilaSeleccionada(muestreo);
     if (caso === "Calidad") {
@@ -909,6 +858,7 @@ const Muestreos = (props) => {
     }
   };
 
+  //Cargar datos por usuario
   const peticionGet = async () => {
     if (cookies.get("Depto") !== "null") {
       setOtros(false);
@@ -930,8 +880,7 @@ const Muestreos = (props) => {
             }
 
             setactionCalidad(false);
-            setactionFecha_ejecucion(false);
-            /* setactionLiberar(true); */
+            setactionFecha_ejecucion(false); 
 
             for (const dataObj of res.data) {
               console.log(dataObj.liberacion);
@@ -952,7 +901,6 @@ const Muestreos = (props) => {
             setactionFecha_ejecucion(true);
             setactionLiberar(false);
 
-
             //IGARCIA - MCERVANTES
             if (cookies.get("IdAgen") === "304" || cookies.get("IdAgen") === "328") {
               setactionCalidad(true);
@@ -963,7 +911,9 @@ const Muestreos = (props) => {
 
           if (
             cookies.get("IdAgen") === "1" ||
-            cookies.get("IdAgen") === "281"
+            cookies.get("IdAgen") === "281" ||
+            cookies.get("IdAgen") === "259" ||
+            cookies.get("IdAgen") === "5"
           ) {
             setactionTarjeta(true);
           } else {
@@ -1001,32 +951,8 @@ const Muestreos = (props) => {
     }
   };
 
-  const handleChangeSearch = (value) => {
-    setSearchText(value);
-    filterData(value);
-  };
-
-  // filter records by search text
-  const filterData = (value) => {
-    const lowercasedValue = value.toLowerCase().trim();
-
-    if (lowercasedValue === "") {
-      setTableData(dataList);
-    } else {
-      const filteredData = dataList.filter((item) => {
-        return Object.keys(item).some((key) =>
-          item[key].toString().toLowerCase().includes(lowercasedValue)
-        );
-      });
-      setTableData(filteredData);
-    }
-  };
-
+  //
   useEffect(() => {
-    /*     setSpinner(true);
-        setTimeout(() => {
-          setSpinner(false);
-        }, 3000) */
     if (dataList.length === 0) {
       peticionGet();
     }
@@ -1072,27 +998,7 @@ const Muestreos = (props) => {
     });
   };
 
-  const addSector = async () => {
-    setLoading(true);
-    await axios
-      .post(url_sector + `/${filaSeleccionada.idMuestreo}`, nvoSector)
-      .then((response) => {
-        setSectores(data.concat(response.data));
-      })
-      .catch((error) => {
-        swal({
-          title: error.response.data,
-          text: "Favor de verificar la información",
-          icon: "error",
-          button: "Cerrar",
-        });
-        console.log(error.response.data);
-        console.log(error.request);
-        console.log(error.message);
-      });
-    setLoading(false);
-  };
-
+  //Eliminar sectores (uno por uno)
   const deleteSector = async (idSector) => {
     await axios
       .delete(url_sector + `/${idSector}`)
@@ -1113,30 +1019,37 @@ const Muestreos = (props) => {
       });
   };
 
+  //Abrir ventana para evaluar calidad
   const openClose_ModalCalidad = () => {
     setmodalCalidad(!modalCalidad);
   };
 
+  //Abrir ventana para agregar fecha de solicitud
   const openClose_ModalFecha_muestreo = () => {
     setmodalFecha_muestreo(!modalFecha_muestreo);
   };
 
+   //Abrir ventana para liberar solicitud
   const openClose_ModalLiberar = () => {
     setmodalLiberar(!modalLiberar);
   };
 
+   //Abrir ventana para agregar análisis
   const openClose_ModalAnalisis = () => {
     setmodalAnalisis(!modalAnalisis);
   };
 
+   //Abrir ventana para reasignar
   const openClose_ModalReasignar = () => {
     setmodalReasignar(!modalReasignar);
   };
 
+   //Abrir ventana para autorizar tarjeta
   const openClose_ModalTarjeta = () => {
     setmodalTarjeta(!modalTarjeta);
   };
 
+   //Abrir ventana para editar solicitud
   const openClose_ModalEditar = () => {
     setmodalEditar(!modalEditar);
   };
@@ -1227,7 +1140,7 @@ const Muestreos = (props) => {
                     id="cod_Campo"
                     className="form-control"
                     onChange={handleChange}
-                    onClick={handlerCargarCampos}
+                    onClick={cargarCampos}
                   >
                     <option value={0}>...</option>
                     {campos.map((item) => (
@@ -1491,8 +1404,7 @@ const Muestreos = (props) => {
                         className="form-control"
                         name="fecha_ejecucion"
                         onChange={handleChange}
-                        autoComplete="off"
-                      /* value={filaSeleccionada&&filaSeleccionada.fecha_ejecucion} */
+                        autoComplete="off" 
                       />
                     </Grid>
                     <Grid item xs={12} md={12} lg={6}>
@@ -1503,27 +1415,9 @@ const Muestreos = (props) => {
                         name="sector"
                         onChange={handleChange}
                         autoComplete="off"
+                        required
                       />
-                    </Grid>
-                    {/* <Grid item xs={12} md={12} lg={6}>        
-        <div className="row">
-        <div className="col-9">                 
-           Sector: 
-          <input 
-          type="text" 
-          className="form-control"
-          name="sector" 
-          onChange={handleChangeSector} 
-          />  
-         </div>
-         <div className="col-2 m-0 p-0">       
-          <button className="btn btn-primary btn-sm active ml-0" style={{marginTop: '23px'}}
-            type="submit" onClick={()=>addSector()}>
-            <i className="fas fa-plus"></i>
-          </button>           
-         </div>
-         </div>    
-        </Grid>  */}
+                    </Grid>                
                   </>
                 ) : null}
               </Grid>
@@ -1714,7 +1608,7 @@ const Muestreos = (props) => {
                           id="codZona"
                           className="form-control"
                           onChange={handleChangeAnalisis}
-                          onClick={handlerZonas}
+                          onClick={cargarZonas}
                         >
                           <option value={0}>Seleccione</option>
                           {zonas.map((item) => (
@@ -2223,18 +2117,13 @@ const Muestreos = (props) => {
                     </thead>
                     <tbody>
                       {tabledata.filter(searchData(search)).map((row, index) => {
-                        const isItemSelected = isSelected(row.idMuestreo);
+                         
 
                         return (
                           <tr
-                            onClick={(event) =>
-                              handleClick(event, row.idMuestreo)
-                            }
-                            role="checkbox"
-                            aria-checked={isItemSelected}
-                            tabIndex={-1}
-                            key={index}
-                            selected={isItemSelected}
+                            
+                            
+                            key={index} 
                             className={styles.tablecell}
                           >
                             <td>
@@ -2447,10 +2336,6 @@ const Muestreos = (props) => {
                                               LIBERADO
                                               {actionAnalisis ? (
                                                 <>
-                                                  {/*<Link to={`/analisis/${row.idMuestreo}`}>
-                    <AddBox />
-                  </Link>  */}
-
                                                   <Button
                                                     variant="primary"
                                                     endIcon={<AddBox />}
@@ -2671,19 +2556,12 @@ const Muestreos = (props) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {tabledataRM.filter(searchData(search)).map((row, index) => {
-                          const isItemSelected = isSelected(row.idMuestreo);
+                        {tabledataRM.filter(searchData(search)).map((row, index) => {                          
 
                           return (
                             <tr
-                              onClick={(event) =>
-                                handleClick(event, row.idMuestreo)
-                              }
-                              role="checkbox"
-                              aria-checked={isItemSelected}
-                              tabIndex={-1}
-                              key={index}
-                              selected={isItemSelected}
+                             
+                              key={index} 
                               className={styles.tablecell}
                             >
                               <td>
@@ -3054,11 +2932,7 @@ const Muestreos = (props) => {
                             </tr>
                           );
                         })}
-                        {emptyRows > 0 && (
-                          <tr style={{ height: 33 * emptyRows }}>
-                            <td colSpan={16} />
-                          </tr>
-                        )}
+                       
                       </tbody>
                     </table>
                   </div>
@@ -3125,18 +2999,13 @@ const Muestreos = (props) => {
                       </thead>
                       <tbody>
                         {tabledataP.filter(searchData(search)).map((row, index) => {
-                          const isItemSelected = isSelected(row.idMuestreo);
+                         
 
                           return (
                             <tr
-                              onClick={(event) =>
-                                handleClick(event, row.idMuestreo)
-                              }
-                              role="checkbox"
-                              aria-checked={isItemSelected}
+                             
                               tabIndex={-1}
-                              key={index}
-                              selected={isItemSelected}
+                              key={index}c
                               className={styles.tablecell}
                             >
                               <td>
@@ -3507,11 +3376,7 @@ const Muestreos = (props) => {
                             </tr>
                           );
                         })}
-                        {emptyRows > 0 && (
-                          <tr style={{ height: 33 * emptyRows }}>
-                            <td colSpan={16} />
-                          </tr>
-                        )}
+                        
                       </tbody>
                     </table>
                   </div>
