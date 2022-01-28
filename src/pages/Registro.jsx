@@ -143,7 +143,7 @@ const Registro = (props) => {
           icon: "success",
           button: "ok",
         }).then(function () {
-          props.history.push('/');
+          //props.history.push('/');
         });
       }).catch(error => {
         swal({
