@@ -20,7 +20,7 @@ import BlockIcon from '@material-ui/icons/Block';
 import MonetizationOnTwoToneIcon from '@material-ui/icons/MonetizationOnTwoTone';
 import HelpOutlineTwoToneIcon from '@material-ui/icons/HelpOutlineTwoTone';
 import TrendingUpTwoToneIcon from '@material-ui/icons/TrendingUpTwoTone';
-
+import AccountCircleTwoToneIcon from '@material-ui/icons/AccountCircleTwoTone';
 import axios from 'axios';
 import swal from 'sweetalert';
 import '../css/index.css';
@@ -95,6 +95,7 @@ const Contenedor = (props) => {
   const { window } = props;
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [registroUsuarios, setregistroUsuarios] = useState(false);
   const [tipoAgentes, setTipoAgentes] = useState(false);
   const [tipoA, setTipoA] = useState(false);
   const [tipoP, setTipoP] = useState(false);
@@ -118,16 +119,13 @@ const Contenedor = (props) => {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  
-  const validaciones = () => 
-  {
-     //Asesores y usuarios que consultan muestreos y analisis
-    if (cookies.get('Depto') !== 'null' || cookies.get('Tipo') !== 'null') 
-    {
-     
-      if (cookies.get('Depto') === 'P' || cookies.get('Depto') === 'C' || cookies.get('Depto') === 'I') 
-      {
-         //Asesor que libera analisis de residuos
+
+  const validaciones = () => {
+    //Asesores y usuarios que consultan muestreos y analisis
+    if (cookies.get('Depto') !== 'null' || cookies.get('Tipo') !== 'null') {
+
+      if (cookies.get('Depto') === 'P' || cookies.get('Depto') === 'C' || cookies.get('Depto') === 'I') {
+        //Asesor que libera analisis de residuos
         if (cookies.get('IdAgen') === '205') {
           setAnalisis(true);
         }
@@ -151,19 +149,17 @@ const Contenedor = (props) => {
       }
 
       /* usuarios consulta */
-      else if (cookies.get('Tipo') !== null) 
-      {
+      else if (cookies.get('Tipo') !== null) {
         if (cookies.get('Tipo') === 'A') {
           setInventario(true);
         }
 
-        else 
-        {
+        else {
           //Usuario ADMIN
-          if (cookies.get('Id') === '352') 
-          {
+          if (cookies.get('Id') === '352') {
             setAdmin(true);
             setFinanciamientos(true);
+            setregistroUsuarios(true);
           }
           setOtros(true);
           setAnalisis(false);
@@ -173,13 +169,12 @@ const Contenedor = (props) => {
           setAdmin(false);
         }
       }
-    }  
+    }
   }
 
   useEffect(() => {
     //si se han perdido las cookies regresar al login
-    if (cookies.get('Id') === undefined) 
-    {      
+    if (cookies.get('Id') === undefined) {
       props.history.push('/');
     }
     //validar usuarios
@@ -247,7 +242,7 @@ const Contenedor = (props) => {
         </IconButton>
       </div>
 
-      <div> 
+      <div>
         <List>
           <List
             component="nav"
@@ -276,6 +271,22 @@ const Contenedor = (props) => {
                 <NavLink className="btn" to="/financiamiento" exact>
                   <ListItemIcon> <MonetizationOnTwoToneIcon />
                     <ListItemText primary="Financiamiento" /></ListItemIcon>
+                </NavLink>
+              </ListItem>
+            </>
+            :
+            <>
+            </>
+          }
+
+          {registroUsuarios ?
+            <>
+              <Divider />
+              <ListItem className="m-0 p-0"
+              >
+                <NavLink className="btn" to="/registro" exact>
+                  <ListItemIcon> <AccountCircleTwoToneIcon />
+                    <ListItemText primary="Usuarios" /></ListItemIcon>
                 </NavLink>
               </ListItem>
             </>
@@ -396,7 +407,7 @@ const Contenedor = (props) => {
                   </>
                 )
               }
- 
+
               <Divider />
 
               <List
@@ -412,7 +423,7 @@ const Contenedor = (props) => {
 
                 {otros === false ?
                   <>
-                    <ListItem  className="m-0 p-0"
+                    <ListItem className="m-0 p-0"
                     >
                       <NavLink className="btn" to="/nuevo" exact>
                         <ListItemIcon>
@@ -658,7 +669,7 @@ const Contenedor = (props) => {
 
           </IconButton>
 
-         {/*  Nombre completo del usuario logueado */}
+          {/*  Nombre completo del usuario logueado */}
           <div className="d-sm-inline-block form-inline">
             <Typography variant="h6">{cookies.get('Completo')}</Typography>
           </div>

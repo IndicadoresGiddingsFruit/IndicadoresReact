@@ -920,7 +920,7 @@ const Muestreos = (props) => {
           if (cookies.get("IdAgen") === "1" ||
             cookies.get("IdAgen") === "281" ||
             cookies.get("IdAgen") === "259" ||
-            cookies.get("IdAgen") === "5"
+            cookies.get("IdAgen") === "5" 
           ) {
             setactionTarjeta(true);
           } else {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Contenedor from "./Contenedor.jsx";
 import { withRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
@@ -13,6 +14,42 @@ import {
 const useStyles = makeStyles((theme) => ({
   inputs: {
     width: '100%'
+  },
+  root: {
+    display: "flex",
+  },
+  toolbar: theme.mixins.toolbar,
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  button: {
+    display: "block",
+    marginTop: theme.spacing(2),
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  modal: {
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%-50%)",
+  },
+  icons: {
+    cursor: "pointer",
+  },
+  inputMaterial: {
+    width: "100%",
+  },
+  ocultar: {
+    display: "none",
   },
 }));
 
@@ -128,16 +165,16 @@ const Registro = (props) => {
   }, []);
 
   return (
-
-    <section className="containerRegistro">
-      <div className="container-fluid">
-        <div className="card card-default">
+<div className={styles.root}>
+      <Contenedor />
+      <div className={styles.content}>
+        <div className={styles.toolbar}> </div>
+        <section className="content">
+          <div className="container-fluid">
+            <div className="card card-default">
           <form onSubmit={registrar}>
-            <div className="card-header">
-              <div>
-                <img src="/Indicadores/dist/img/logo_horizontal.png" alt="" style={{ width: '100px' }, { height: '60px' }} />
-              </div>
-              <span className="font-weight-bold text-secondary">Indicadores GiddingsFruit</span>
+            <div className="card-header">              
+              <h5 className="font-weight-bold text-secondary">Registrar un nuevo usuario</h5>
               <br />
               {
                 error ? <span className="font-weight-bold text-danger mt-3">{error}</span> : null
@@ -221,9 +258,11 @@ const Registro = (props) => {
               </button>
             </div>
           </form>
-        </div>
+          </div>
+          </div>
+        </section>
       </div>
-    </section>
+    </div>
 
   )
 }

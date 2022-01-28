@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
 function searchData(search) {
   return function (item) {
     return (
-      item.nivel.toLowerCase().includes(search.toLowerCase()) ||
       item.noPuntoDesc.toLowerCase().includes(search.toLowerCase()) ||
       item.puntoControlDesc.toLowerCase().includes(search.toLowerCase())
     );
@@ -371,7 +370,7 @@ const Auditoria = (props) => {
     await axios
       .put(url + "/" + filaSeleccionada.respondida, registroEdita)
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
 
         const arrayEditado = puntosControl.map((item) =>
           item.respondida === filaSeleccionada.respondida ?
@@ -397,7 +396,7 @@ const Auditoria = (props) => {
           button: "ok",
         }).then((value) => {
           if (value) {
-            openClose_Modal();
+            //openClose_Modal();
             window.location.reload();
           }
         });
@@ -405,7 +404,7 @@ const Auditoria = (props) => {
       .catch((error) => {
         swal({
           title: "error",
-          text: error.request.response,
+          text: error.request.data,
           icon: "error",
           button: "Cerrar",
         });
@@ -1562,12 +1561,6 @@ const Auditoria = (props) => {
                                   >Marcar como: SI
                                   </button>
 
-                                  {/* <button
-                                className="btn btn-danger m-2"
-                                type="submit" onClick={() => guardarVarios("NO")}
-                              >Marcar como: NO
-                              </button> */}
-
                                   <button
                                     className="btn btn-secondary m-2"
                                     type="submit" onClick={() => guardarVarios("NA")}
@@ -1724,7 +1717,7 @@ const Auditoria = (props) => {
                                                 <>
                                                   {cod_Campo === item.cod_Campo ?
                                                     <>
-                                                      {fotos.map((subitem) => (
+                                                      {fotos.filter(x => x.extension !== "pdf  ").map((subitem) => (
                                                         <>
                                                           {item.cod_Campo === subitem.cod_Campo ?
                                                             <>
@@ -1833,6 +1826,7 @@ const Auditoria = (props) => {
                                                 <>
                                                   {cod_Campo === item.cod_Campo ?
                                                     <>
+
                                                       {pdfsAnalisis.map((subitem) => (
                                                         <>
                                                           {item.id === subitem.idProdAuditoriaCampo ?
@@ -1887,132 +1881,142 @@ const Auditoria = (props) => {
                 <>
                   <div className="card-body font-weight-bold">
                     <div className="row">
-                      <div className="col-12 mt-2 float-rigth">
-                        <input
-                          type="text"
-                          placeholder="Buscar punto de control..."
-                          onChange={(e) => setSearchNO(e.target.value)}
-                          className="form-control mb-2"
-                          name="searchText"
-                        />
-                      </div>
-                      <div className="col-12">
-                        <div className="table-auditoria table-responsive table-condensed table-sm">
-                          <table
-                            className="table-auditoria table-hover table-sm table-striped"
-                            style={{ fontSize: 11 }}>
-                            <thead>
-                              <tr className="table-secondary">
-                                <th colSpan={5}>Selecione un Punto de Control para comenzar</th>
-                              </tr>
-                              <tr className="table-primary">
-                                <th>Nivel</th>
-                                <th>Punto Control</th>
-                                <th>Foto</th>
-                                <th>Corregir</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {puntosControlNO.filter(searchDataNO(searchNO)).map((item) => (
-                                <>
-                                  <tr key={item.idLog}>
-                                    <td>{item.nivel}</td>
-                                    <td>{item.noPuntoDesc} - {item.puntoControlDesc}</td>
-                                    {item.fotoAC !== null && item.fotoAC !== 0 ?
-                                      <>
-                                        <td>
-                                          <IconButton aria-label="expand row" size="small"
-                                            onClick={() => toggleShownAC(item.idLogAC)}>
-                                            {item.isOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                                          </IconButton>
-                                        </td>
-                                      </>
-                                      :
-                                      <>
-                                        {item.dias <= 28 ?
+                      {puntosControlNO.length > 0 ?
+                        <>
+                          <div className="col-12 mt-2 float-rigth">
+                            <input
+                              type="text"
+                              placeholder="Buscar punto de control..."
+                              onChange={(e) => setSearchNO(e.target.value)}
+                              className="form-control mb-2"
+                              name="searchText"
+                            />
+                          </div>
+                          <div className="col-12">
+                            <div className="table-auditoria table-responsive table-condensed table-sm">
+
+                              <table
+                                className="table-auditoria table-hover table-sm table-striped"
+                                style={{ fontSize: 11 }}>
+                                <thead>
+                                  <tr className="table-secondary">
+                                    <th colSpan={5}>Selecione un Punto de Control para comenzar</th>
+                                  </tr>
+                                  <tr className="table-primary">
+                                    <th>Nivel</th>
+                                    <th>Punto Control</th>
+                                    <th>Foto</th>
+                                    <th>Corregir</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {puntosControlNO.filter(searchDataNO(searchNO)).map((item) => (
+                                    <>
+                                      <tr key={item.idLog}>
+                                        <td>{item.nivel}</td>
+                                        <td>{item.noPuntoDesc} - {item.puntoControlDesc}</td>
+                                        {item.fotoAC !== null && item.fotoAC !== 0 ?
                                           <>
                                             <td>
-                                              <button type="button" className="btn btn-info btn-sm"
-                                                onClick={() =>
-                                                  seleccionarRegistro(
-                                                    item, "FotoAC"
-                                                  )
-                                                }
-                                              > <i className="fas fa-plus-circle"></i>
-                                              </button>
+                                              <IconButton aria-label="expand row" size="small"
+                                                onClick={() => toggleShownAC(item.idLogAC)}>
+                                                {item.isOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                              </IconButton>
                                             </td>
                                           </>
-                                          : <>
-                                            <td align="center" bgcolor="Tomato">
-                                              <i className="fas fa-times"></i>
-                                            </td>
+                                          :
+                                          <>
+                                            {item.dias <= 28 ?
+                                              <>
+                                                <td>
+                                                  <button type="button" className="btn btn-info btn-sm"
+                                                    onClick={() =>
+                                                      seleccionarRegistro(
+                                                        item, "FotoAC"
+                                                      )
+                                                    }
+                                                  > <i className="fas fa-plus-circle"></i>
+                                                  </button>
+                                                </td>
+                                              </>
+                                              : <>
+                                                <td align="center" bgcolor="Tomato">
+                                                  <i className="fas fa-times"></i>
+                                                </td>
+                                              </>
+                                            }
                                           </>
                                         }
-                                      </>
-                                    }
-                                    {item.opcion === "NO" ?
-                                      <>
-                                        {item.dias <= 28 ?
-                                          <td>
-                                            <Link
-                                              to={`/accionCorrectiva/${idAuditoria}/${item.idCatAuditoria}`}
-                                              className="btn btn-danger btn-sm">
-                                              Corregir
-                                            </Link>
+                                        {item.opcion === "NO" ?
+                                          <>
+                                            {item.dias <= 28 ?
+                                              <td>
+                                                <Link to={`/accionCorrectiva/${idAuditoria}/${item.idCatAuditoria}`}
+                                                  className="btn btn-danger btn-sm">
+                                                  Corregir
+                                                </Link>
+                                              </td>
+                                              :
+                                              <>
+                                                <td align="center" bgcolor="Tomato">
+                                                  <i className="fas fa-times"></i>
+                                                </td>
+                                              </>
+                                            }
+                                          </>
+                                          :
+                                          <td align="center" bgcolor="LightGreen">
+                                            <DoneIcon />
                                           </td>
-                                          :
-                                          <>
-                                           <td align="center" bgcolor="Tomato">
-                                              <i className="fas fa-times"></i>
-                                            </td>
-                                          </>
                                         }
-                                      </>
-                                      :
-                                      <td align="center" bgcolor="LightGreen">
-                                        <DoneIcon />
-                                      </td>
-                                    }
 
-                                  </tr>
-                                  <tr>
-                                    {fotos.map((subitem) => (
-                                      <>
-                                        {item.idLogAC === subitem.idLogAC ?
+                                      </tr>
+                                      <tr>
+                                        {fotos.map((subitem) => (
                                           <>
-                                            <td colSpan={4} style={{ padding: 0, margin: 0 }}>
-                                              <Collapse in={subitem.isOpen} timeout="auto" unmountOnExit>
-                                                <Box margin={1}>
-                                                  <table size="medium">
-                                                    <tbody>
-                                                      {rutaFile !== null ?
-                                                        <>
-                                                          <img style={{ width: '100%', height: '100%' }}
-                                                            id="foto"
-                                                            src={rutaFile}
-                                                            alt=""
-                                                          />
-                                                        </>
-                                                        : null
-                                                      }
-                                                    </tbody>
-                                                  </table>
-                                                </Box>
-                                              </Collapse>
-                                            </td>
+                                            {item.idLogAC === subitem.idLogAC ?
+                                              <>
+                                                <td colSpan={4} style={{ padding: 0, margin: 0 }}>
+                                                  <Collapse in={subitem.isOpen} timeout="auto" unmountOnExit>
+                                                    <Box margin={1}>
+                                                      <table size="medium">
+                                                        <tbody>
+                                                          {rutaFile !== null ?
+                                                            <>
+                                                              <img style={{ width: '100%', height: '100%' }}
+                                                                id="foto"
+                                                                src={rutaFile}
+                                                                alt=""
+                                                              />
+                                                            </>
+                                                            : null
+                                                          }
+                                                        </tbody>
+                                                      </table>
+                                                    </Box>
+                                                  </Collapse>
+                                                </td>
+                                              </>
+                                              :
+                                              null}
                                           </>
-                                          :
-                                          null}
-                                      </>
-                                    ))}
-                                  </tr>
-                                </>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
+                                        ))}
+                                      </tr>
+                                    </>
+                                  ))}
+                                </tbody>
+                              </table>
 
+                            </div>
+                          </div>
+                        </>
+                        :
+                        <>
+                          <div className="alert alert-danger" role="alert">
+                            Ninguna acción por corregir
+                          </div>
+                        </>
+                      }
                       <Modal open={modalFotoNO} onClose={openClose_ModalFotoNO}>
                         {subir_fotoNO}
                       </Modal>

@@ -213,17 +213,6 @@ const Responder=(props)=>{
     <div className={styles.toolbar}> </div>   
     <section className="content">  
      <h6>{descEncuesta}</h6>
- {/* <h6>Encuesta de satisfacción de servicio, con las siguientes consideraciones:
-      <br />
-      Se considera el área de INFORMÁTICA a la gerencia de Alexander 
-      <br />
-      Se considera el área de SOPORTE a la gerencia de Julio Manzo 
-      <br />
-      Es obligatorio agregar comentarios
-      <br />
-      <i>Tus respuestas y tu nombre serán confidenciales </i>
-    </h6>
-     */}
     <hr/>
 
     <h6>{nombrEncuesta}</h6>  
@@ -267,7 +256,6 @@ const Responder=(props)=>{
                     autoComplete="off"
                     maxLength="60"
                     style={{width:'60%'}}
-                    /* onChange={(e) => setRespuestaLibre(e.target.value)} */
                     onChange={handleChangeL}
                     onBlur={onblurRespuesta}
                   ></input>       
