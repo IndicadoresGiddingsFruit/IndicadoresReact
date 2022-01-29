@@ -142,9 +142,7 @@ const Registro = (props) => {
           title: "¡Registro correcto!",
           icon: "success",
           button: "ok",
-        }).then(function () {
-          //props.history.push('/');
-        });
+        })
       }).catch(error => {
         swal({
           title: "Favor de verificar la información",

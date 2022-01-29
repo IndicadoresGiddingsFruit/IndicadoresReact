@@ -1210,25 +1210,7 @@ const Auditoria = (props) => {
         <form onSubmit={guardarDataProd}>
           <div className="card-body">
             <div className="form-group-sm">
-              <Grid container spacing={1}>
-                {/* <Grid item xs={12} md={12} lg={6}>
-                  Entidad Legal:
-                  <input
-                    className="form-control"
-                    name="rfc"
-                    autoComplete="off"
-                    onChange={handleChangeProd}
-                  />
-                </Grid>
-                <Grid item xs={12} md={12} lg={6}>
-                  Nombre del titular:
-                  <input
-                    className="form-control"
-                    name="contacto"
-                    autoComplete="off"
-                    onChange={handleChangeProd}
-                  />
-                </Grid> */}
+              <Grid container spacing={1}>              
 
                 <Grid item xs={12} md={12} lg={6}>
                   {
@@ -1245,29 +1227,6 @@ const Auditoria = (props) => {
                     <option value={"CERT. INICIAL"}>CERT. INICIAL</option>
                   </select>
                 </Grid>
-
-                {/*   <Grid item xs={12} md={12} lg={4}>
-                  Teléfono:
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="telefono"
-                    maxLength={10}
-                    minLength={10}
-                    variant="outlined"
-                    autoComplete="off"
-                    onChange={handleChangeProd}
-                  />
-                </Grid>
-                <Grid item xs={12} md={12} lg={4}>
-                  Correo:
-                  <input
-                    className="form-control"
-                    name="correo"
-                    autoComplete="off"
-                    onChange={handleChangeProd}
-                  />
-                </Grid> */}
 
                 <Grid item xs={12} md={12} lg={6}>
                   Proyeccion:
@@ -1298,23 +1257,7 @@ const Auditoria = (props) => {
                   />
                 </Grid>
 
-                {/*   <Grid item xs={12} md={12} lg={8}>
-                  Localidad:
-                  <select
-                    name="codLocalidad"
-                    className="form-control" 
-                  >
-                    <option value={0}>Seleccione</option>
-                    {localidades.map((item) => (
-                      <option
-                        key={item.codLocalidad}
-                        value={item.codLocalidad}
-                      >
-                        {item.completo}
-                      </option>
-                    ))}
-                  </select>
-                </Grid> */}
+              
                 <Grid item xs={12} md={12} lg={12}>
                   Ubicacion:
                   <input
